@@ -1,15 +1,18 @@
 import * as React from "react";
 import { LinearGradient } from "expo-linear-gradient";
+import Meeting from "./Meeting";
 
 import commonStyles from "../../styles/common";
-import { MARINE, AQUA_MARINE } from "../../styles/colors";
+import { LINEAR_GRADIENT_COLORS } from "../../styles/colors";
 
 const MeetingView = () => {
   return (
     <LinearGradient
-      colors={[MARINE, AQUA_MARINE]}
+      colors={LINEAR_GRADIENT_COLORS}
       style={commonStyles.viewContainer}
-    ></LinearGradient>
+    >
+      <Meeting />
+    </LinearGradient>
   );
 };
 

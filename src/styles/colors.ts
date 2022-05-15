@@ -8,3 +8,4 @@ export const NODE_FILL = '#465dba';
 export const WHITE_FADED = 'rgba(255, 255, 255, 0.4)';
 export const MARINE_FADED = 'rgba(2, 41, 80, 0.9)';
 export const NODE_GRAPH_FILL = 'rgba(70, 93, 186, 0.5)';
+export const LINEAR_GRADIENT_COLORS = [MARINE, AQUA_MARINE];

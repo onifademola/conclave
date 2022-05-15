@@ -5,6 +5,7 @@ const commonStyles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     justifyContent: "flex-end",
+    paddingTop: 30,
   },
 });
 

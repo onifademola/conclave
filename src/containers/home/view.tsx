@@ -8,7 +8,7 @@ import MyAttendancesContainer from "../myAttendances/index";
 const HomeView = () => {
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
-    { key: "meeting", title: "Meeting", icon: "alarm-multiple" },
+    { key: "meeting", title: "Meetings", icon: "alarm-multiple" },
     { key: "profile", title: "Profile", icon: "account" },
     { key: "recents", title: "Recents", icon: "history" },
   ]);
