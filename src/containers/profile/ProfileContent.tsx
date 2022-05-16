@@ -1,11 +1,13 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Title, Avatar, Headline, Text } from "react-native-paper";
 import {
   PRY_COLOR,
   SEC_COLOR,
   ACCENT,
   SEC_TEXT_COLOR,
+  WHITE_FADED
 } from "../../styles/colors";
 import { meetingAttendance } from "../../mock/data";
 
@@ -45,11 +47,35 @@ const renderDetail = () => {
         flexDirection: "column",
         justifyContent: "flex-end",
         paddingLeft: 5,
+        alignItems: "flex-end",
       }}
     >
-      <Text style={styles.text}>Email: </Text>
-      <Text style={styles.text}>DEPARTMENT: Solutions</Text>
-      <Text style={styles.text}>SITE: Onitsha</Text>
+      <Ionicons
+        name="ios-information-circle-sharp"
+        size={65}
+        color={SEC_TEXT_COLOR}
+      />
+      <View
+        style={{
+          flexDirection: "column",
+          justifyContent: "flex-end",
+          paddingLeft: 5,
+          alignItems: "flex-start",
+        }}
+      >
+        <Text style={styles.text}>
+          <Ionicons name="ios-mail-sharp" size={18} color={SEC_TEXT_COLOR} />
+          {" ade@we.com"}
+        </Text>
+        <Text style={styles.text}>
+          <Ionicons name="ios-people" size={18} color={SEC_TEXT_COLOR} />
+          {" SOLUTIONS"}
+        </Text>
+        <Text style={styles.text}>
+          <Ionicons name="ios-home-sharp" size={18} color={SEC_TEXT_COLOR} />
+          {" Onitsha"}
+        </Text>
+      </View>
     </View>
   );
 };
@@ -57,11 +83,11 @@ const renderDetail = () => {
 const ProfileContent = ({ user }) => {
   return (
     <View style={styles.container}>
-      <Headline style={styles.profileName}>Joan Erukpe Bro. Lasisi</Headline>
       <View style={styles.subContainer}>
         {renderAvatarText()}
         {renderDetail()}
       </View>
+      <Headline style={styles.profileName}>Joan Erukpe Bro. Lasisi</Headline>
     </View>
   );
 };
@@ -79,19 +105,22 @@ const styles = StyleSheet.create({
   },
   subContainer: {
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
   },
   profileName: {
-    fontSize: 30,
-    color: SEC_TEXT_COLOR,
+    fontSize: 24,
+    color: PRY_COLOR,
     fontWeight: "bold",
     paddingLeft: 20,
     paddingTop: 40,
+    alignItems: "flex-end",
+    textAlign: "right",
   },
   text: {
     color: SEC_TEXT_COLOR,
     marginBottom: 0.5,
     fontSize: 18,
+    fontWeight: "800",
   },
 });
 
