@@ -14,8 +14,7 @@ import {
   MARINE_FADED,
   AQUA_MARINE,
   WHITE_FADED,
-  NODE_GRAPH_FILL,
-  ORANGE_PINK
+  TEXT_COLOR
 } from './colors';
 import { fontConfig } from "./fonts";
 
@@ -44,6 +43,7 @@ const AppDefaultTheme = {
     primary: WHITE_FADED,
     accent: MARINE_FADED,
     background: WHITE_FADED,
+    text: TEXT_COLOR,
   },
 };
 

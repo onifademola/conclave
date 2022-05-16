@@ -15,7 +15,7 @@ interface Meeting {
   createdBy: string;
 };
 
-const { Title, Actions, Content } = Card;
+const { Title, Content } = Card;
 
 const ItemComponent = ({ meeting }) => {
   const { 
@@ -71,8 +71,8 @@ const ItemComponent = ({ meeting }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingLeft: 25,
-    paddingRight: 25,
+    paddingLeft: 15,
+    paddingRight: 15,
     padding: 2,
   },
   card: {

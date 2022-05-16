@@ -6,39 +6,49 @@ import EmptyList from '../../common/EmptyList';
 
 import { meetings } from '../../mock/data';
 
+const renderAddIcon = () => (
+  <TouchableOpacity
+    activeOpacity={0.7}
+    onPress={() => console.log("Tochable touched!")}
+    style={styles.icon}
+  >
+    <IconButton
+      color="white"
+      icon="plus-circle"
+      size={70}
+      onPress={() => console.log("add button pressed")}
+    />
+  </TouchableOpacity>
+);
+
 const Meeting = () => {
-  const meetingsList = null;
+  const meetingsList = meetings;
   const renderItem = ({ item }) => {
     return <ItemComponent meeting={item} />;
   };
 
-  if (!meetingsList) return <EmptyList />;
+  if (!meetingsList) return (
+    <View style={styles.container}>
+      <EmptyList />
+      {renderAddIcon()}
+    </View>
+  );
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView>
       <FlatList
         data={meetingsList}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
-      <TouchableOpacity
-        activeOpacity={0.7}
-        onPress={() => console.log('Tochable touched!')}
-        style={styles.icon}
-      >
-        <IconButton
-          color="white"
-          icon="plus-circle"
-          size={70}
-          onPress={() => console.log("add button pressed")}
-        />
-      </TouchableOpacity>
+      {renderAddIcon()}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    flex: 1,
   },
   icon: {
     position: "absolute",
