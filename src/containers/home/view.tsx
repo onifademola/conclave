@@ -3,10 +3,10 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 // import { SvgUri } from "react-native-svg";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
-  MARINE,
+  PRY_COLOR,
   TEXT_COLOR,
-  AQUA_MARINE,
-  WHITE_FADED,
+  SEC_COLOR,
+  WHITE,
 } from "../../styles/colors";
 
 const Tab = createBottomTabNavigator();
@@ -32,24 +32,8 @@ const HomeView = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          // switch (route.name) {
-          //   case "Meetings":
-          //     iconName = focused ? "alarm-multiple" : "alarm-multiple";
-          //     return;
-          //   case "Profile":
-          //     iconName = focused ? "account" : "account";
-          //     return;
-          //   case "Recent":
-          //     iconName = focused ? "ios-hourglass" : "ios-hourglass-outline";
-          //     return;
-          //   default:
-          //     return;
-          // }
-          
           if (route.name === "Meetings") {
-            iconName = focused
-              ? "timer"
-              : "timer-outline";
+            iconName = focused ? "timer" : "timer-outline";
           } else if (route.name === "Profile") {
             iconName = focused ? "person" : "person-outline";
           } else if (route.name === "Recent") {
@@ -61,10 +45,10 @@ const HomeView = () => {
           // You can return any component that you like here!
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: TEXT_COLOR,
-        tabBarInactiveTintColor: AQUA_MARINE,
+        tabBarActiveTintColor: WHITE,
+        tabBarInactiveTintColor: SEC_COLOR,
         headerStyle: {
-          backgroundColor: MARINE,
+          backgroundColor: PRY_COLOR,
         },
         headerTintColor: "#fff",
         headerTitleStyle: {
@@ -73,7 +57,10 @@ const HomeView = () => {
         tabBarLabelStyle: {
           fontSize: 16,
         },
-        tabBarActiveBackgroundColor: WHITE_FADED,
+        tabBarActiveBackgroundColor: PRY_COLOR,
+        tabBarStyle: {
+          backgroundColor: "black",
+        },
       })}
     >
       <Tab.Screen

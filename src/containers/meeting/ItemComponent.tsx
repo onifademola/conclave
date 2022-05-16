@@ -1,8 +1,14 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Avatar, Card, IconButton, Title as Tit, Paragraph } from "react-native-paper";
-import AppButton from '../../common/AppButton';
-import { MARINE_FADED } from '../../styles/colors';
+import React from "react";
+import { View, StyleSheet } from "react-native";
+import {
+  Avatar,
+  Card,
+  IconButton,
+  Title as Tit,
+  Paragraph,
+} from "react-native-paper";
+import AppButton from "../../common/AppButton";
+import { ACCENT, SEC_TEXT_COLOR } from "../../styles/colors";
 
 interface Meeting {
   id: string;
@@ -13,24 +19,24 @@ interface Meeting {
   departmentId: string;
   siteId: string;
   createdBy: string;
-};
+}
 
 const { Title, Content } = Card;
 
 const ItemComponent = ({ meeting }) => {
-  const { 
-    id, 
-    meetingName, 
-    startDate, 
-    endDate, 
-    detail, 
-    createdBy, 
-    departmentId, 
-    siteId
+  const {
+    id,
+    meetingName,
+    startDate,
+    endDate,
+    detail,
+    createdBy,
+    departmentId,
+    siteId,
   } = meeting;
-  
+
   if (!meeting) return null;
-  
+
   return (
     <View style={styles.container}>
       <Card style={styles.card}>
@@ -41,7 +47,7 @@ const ItemComponent = ({ meeting }) => {
           subtitle={`From: ${startDate} - To: ${endDate}`}
           left={(props) => (
             <IconButton
-              color="white"
+              color={SEC_TEXT_COLOR}
               icon="qrcode-scan"
               size={30}
               onPress={() => console.log("scan pressed")}
@@ -50,7 +56,7 @@ const ItemComponent = ({ meeting }) => {
           right={(props) => (
             <IconButton
               {...props}
-              color="white"
+              color={SEC_TEXT_COLOR}
               // icon="arrow-right-drop-circle-outline"
               icon="order-alphabetical-ascending"
               size={35}
@@ -67,7 +73,7 @@ const ItemComponent = ({ meeting }) => {
       </Card>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -76,15 +82,15 @@ const styles = StyleSheet.create({
     padding: 2,
   },
   card: {
-    backgroundColor: MARINE_FADED,
+    backgroundColor: ACCENT,
   },
   content: {
-    color: "white",
+    color: SEC_TEXT_COLOR,
   },
   title: {
-    color: "white",
+    color: SEC_TEXT_COLOR,
     fontWeight: "bold",
   },
 });
 
-export default ItemComponent
+export default ItemComponent;

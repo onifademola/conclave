@@ -10,9 +10,9 @@ import {
 import merge from "deepmerge";
 import { 
   BLUE_PURPLE,
-  MARINE,
-  MARINE_FADED,
-  AQUA_MARINE,
+  PRY_COLOR,
+  ACCENT,
+  SEC_COLOR,
   WHITE_FADED,
   TEXT_COLOR
 } from './colors';
@@ -41,7 +41,7 @@ const AppDefaultTheme = {
   colors: {
     ...CombinedDefaultTheme.colors,
     primary: WHITE_FADED,
-    accent: MARINE_FADED,
+    accent: ACCENT,
     background: WHITE_FADED,
     text: TEXT_COLOR,
   },
