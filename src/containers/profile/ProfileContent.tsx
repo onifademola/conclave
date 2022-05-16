@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from "react-native";
-import { Title, Avatar, Headline } from "react-native-paper";
+import { Title, Avatar, Headline, Text } from "react-native-paper";
 import { MARINE, AQUA_MARINE, MARINE_FADED } from '../../styles/colors';
 import { meetingAttendance } from '../../mock/data';
 
@@ -36,10 +36,9 @@ const renderAvatarText = () => (
 const renderDetail = () => {
   return (
     <View style={{ flexDirection: 'column', justifyContent: 'flex-end', paddingLeft: 5 }}>
-      <Title style={{ color: "white" }}>These are some other user detail</Title>
-      <Title style={{ color: "white" }}>These are some other user detail</Title>
-      <Title style={{ color: "white" }}>These are some other user detail</Title>
-      <Title style={{ color: "white" }}>These are some other user detail</Title>
+      <Text style={styles.text}>Email: </Text>
+      <Text style={styles.text}>DEPARTMENT: Solutions</Text>
+      <Text style={styles.text}>SITE: Onitsha</Text>
     </View>
   );
 };
@@ -72,10 +71,16 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   profileName: {
-    fontSize: 34,
+    fontSize: 30,
     color: "white",
     fontWeight: "bold",
-    padding: 20
+    paddingLeft: 20,
+    paddingTop: 40,
+  },
+  text: {
+    color: "white",
+    marginBottom: .5,
+    fontSize: 18,
   },
 });
 
