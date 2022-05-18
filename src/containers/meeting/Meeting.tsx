@@ -1,27 +1,28 @@
 import React from 'react';
-import { SafeAreaView, View, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { SafeAreaView, View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { IconButton } from 'react-native-paper';
+import { useNavigation } from "@react-navigation/native";
 import ItemComponent from './ItemComponent';
 import EmptyList from '../../common/EmptyList';
 
 import { meetings } from '../../mock/data';
 
-const renderAddIcon = () => (
-  <TouchableOpacity
-    activeOpacity={0.7}
-    onPress={() => console.log("Tochable touched!")}
-    style={styles.icon}
-  >
-    <IconButton
-      color="white"
-      icon="plus-circle"
-      size={70}
-      onPress={() => console.log("add button pressed")}
-    />
-  </TouchableOpacity>
-);
+const renderAddIcon = () => {
+  const navigation = useNavigation();
+  return ( 
+    <TouchableOpacity activeOpacity={0.7} style={styles.icon}>
+      <IconButton
+        color="white"
+        icon="plus-circle"
+        size={70}
+        onPress={() => navigation.navigate("CreateMeeting")}
+      />
+    </TouchableOpacity>
+  );
+};
 
-const Meeting = () => {
+const Meeting = ({ navigation }) => {
+  console.log(navigation);
   const meetingsList = meetings;
   const renderItem = ({ item }) => {
     return <ItemComponent meeting={item} />;
@@ -30,7 +31,7 @@ const Meeting = () => {
   if (!meetingsList) return (
     <View style={styles.container}>
       <EmptyList />
-      {renderAddIcon()}
+      {renderAddIcon(navigation)}
     </View>
   );
 

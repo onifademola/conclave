@@ -7,7 +7,6 @@ import {
   Title as Tit,
   Paragraph,
 } from "react-native-paper";
-import AppButton from "../../common/AppButton";
 import { ACCENT, SEC_TEXT_COLOR } from "../../styles/colors";
 
 interface Meeting {

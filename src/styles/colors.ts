@@ -7,6 +7,7 @@ export const WHITE_FADED = 'rgba(255, 255, 255, 0.4)';
 export const ACCENT = '#FAC73C';
 export const BASE_FILL = 'rgba(70, 93, 186, 0.5)';
 export const LINEAR_GRADIENT_COLORS = [PRY_COLOR, SEC_COLOR];
+export const BACKGROUND_GRADIENT_COLORS = 'rgba(122,98,29,1)';
 
 
 // export const BLUE_PURPLE = '#465dba';

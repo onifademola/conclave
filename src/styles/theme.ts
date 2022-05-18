@@ -9,7 +9,7 @@ import {
 } from "@react-navigation/native";
 import merge from "deepmerge";
 import { 
-  BLUE_PURPLE,
+  BACKGROUND_GRADIENT_COLORS,
   PRY_COLOR,
   ACCENT,
   SEC_COLOR,
@@ -27,12 +27,6 @@ const commonTheme = {
     scale: 1.0,
   },
   fonts: configureFonts(fontConfig),
-  // fonts: {
-  //   regular: '',
-  //   medium: '',
-  //   light: '',
-  //   thin: ''
-  // }
 };
 
 const AppDefaultTheme = {
@@ -42,7 +36,8 @@ const AppDefaultTheme = {
     ...CombinedDefaultTheme.colors,
     primary: WHITE_FADED,
     accent: ACCENT,
-    background: WHITE_FADED,
+    background: ACCENT,
+    backdrop: BACKGROUND_GRADIENT_COLORS,
     text: TEXT_COLOR,
   },
 };

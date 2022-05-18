@@ -1,29 +1,77 @@
 import React from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-// import { SvgUri } from "react-native-svg";
+import { SvgUri } from "react-native-svg";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack";
 import {
   PRY_COLOR,
   TEXT_COLOR,
   SEC_COLOR,
   WHITE,
 } from "../../styles/colors";
+import { Text, View, Image } from "react-native";
+import AppLogo from '../../../assets/conclave.png';
 
 const Tab = createBottomTabNavigator();
 
 import MeetingContainer from "../meeting/index";
 import ProfileContainer from "../profile/index";
 import MyAttendancesContainer from "../myAttendances/index";
+import CreateMeeting from "../meeting/CreateMeeting";
 
-// const LogoTitle = () => {
-//   return (
-//     <SvgUri
-//       width="100%"
-//       height="100%"
-//       uri="https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/debian.svg"
-//     />
-//   );
-// }
+const MeetingsStack = createStackNavigator();
+const MeetingsStackScreen = () => {
+  return (
+    <MeetingsStack.Navigator
+      screenOptions={() => ({
+        headerShown: false,
+      })}
+    >
+      <MeetingsStack.Screen name="Meeting" component={MeetingContainer} />
+      <MeetingsStack.Screen name="CreateMeeting" component={CreateMeeting} />
+    </MeetingsStack.Navigator>
+  );
+};
+
+const ProfileStack = createStackNavigator();
+const ProfileStackScreen = () => {
+  return (
+    <ProfileStack.Navigator
+      screenOptions={() => ({
+        headerShown: false,
+      })}
+    >
+      <ProfileStack.Screen name="MyProfile" component={ProfileContainer} />
+    </ProfileStack.Navigator>
+  );
+};
+
+const RecentStack = createStackNavigator();
+const RecentStackScreen = () => {
+  return (
+    <RecentStack.Navigator
+      screenOptions={() => ({
+        headerShown: false,
+      })}
+    >
+      <RecentStack.Screen name="MyRecent" component={MyAttendancesContainer} />
+    </RecentStack.Navigator>
+  );
+};
+
+const LogoTitle = () => {
+  return (
+    // <SvgUri
+    //   width="100%"
+    //   height="100%"
+    //   uri="https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/debian.svg"
+    // />
+    <Image
+      //style={styles.logo}
+      source={AppLogo}
+    />
+  );
+}
 
 const HomeView = () => {
   return (
@@ -48,7 +96,8 @@ const HomeView = () => {
         tabBarActiveTintColor: WHITE,
         tabBarInactiveTintColor: SEC_COLOR,
         headerStyle: {
-          backgroundColor: PRY_COLOR,
+          // backgroundColor: PRY_COLOR,
+          backgroundColor: "transparent",
         },
         headerTintColor: "#fff",
         headerTitleStyle: {
@@ -65,18 +114,18 @@ const HomeView = () => {
     >
       <Tab.Screen
         name="Meetings"
-        component={MeetingContainer}
-        // options={{ headerTitle: (props) => <LogoTitle {...props} /> }}
+        component={MeetingsStackScreen}
+        options={{ headerTitle: (props) => <LogoTitle {...props} /> }}
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileContainer}
-        // options={{ headerTitle: (props) => <LogoTitle {...props} /> }}
+        component={ProfileStackScreen}
+        options={{ headerTitle: (props) => <LogoTitle {...props} /> }}
       />
       <Tab.Screen
         name="Recent"
-        component={MyAttendancesContainer}
-        // options={{ headerTitle: (props) => <LogoTitle {...props} /> }}
+        component={RecentStackScreen}
+        options={{ headerTitle: (props) => <LogoTitle {...props} /> }}
       />
     </Tab.Navigator>
   );
