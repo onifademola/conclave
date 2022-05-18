@@ -1,6 +1,10 @@
 import moment from "moment";
 
 export const convertedDateCombinationToISO = (meetingDateTimestamp, otherDateTimestamp) => {
+  const validMeetingDate = moment(meetingDateTimestamp);
+  const validOtherDate = moment(otherDateTimestamp);
+  if (!validMeetingDate.isValid()) return null;
+  if (!validOtherDate.isValid()) return null;
   const _meetingDate = new Date(meetingDateTimestamp);
   const _otherDate = new Date(otherDateTimestamp);
   const mom = moment({
@@ -13,4 +17,8 @@ export const convertedDateCombinationToISO = (meetingDateTimestamp, otherDateTim
   return new Date(mom).toISOString();
 };
 
-export const convertToHourMinute = isoDate => moment(isoDate).format("LT");
+export const convertToHourMinute = isoDate => {
+  const validDate = moment(isoDate);
+  if (!validDate.isValid()) return null;
+  return moment(isoDate).format("LT");
+};

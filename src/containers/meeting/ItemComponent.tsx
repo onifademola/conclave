@@ -1,13 +1,16 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import {
-  Avatar,
   Card,
   IconButton,
   Title as Tit,
   Paragraph,
 } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
 import { ACCENT, SEC_TEXT_COLOR } from "../../styles/colors";
+import ModalAlertComponent, {
+  ModalType,
+} from "../../common/ModalAlertComponent";
 
 interface Meeting {
   id: string;
@@ -22,7 +25,19 @@ interface Meeting {
 
 const { Title, Content } = Card;
 
+const showBusy = () => {
+  // return <BusyComponent />;
+  return (
+    <ModalAlertComponent
+      type={ModalType.success}
+      message="Happy! It went well."
+    />
+  );
+};
+
 const ItemComponent = ({ meeting }) => {
+  if (!meeting) return null;
+  const navigation = useNavigation();
   const {
     id,
     meetingName,
@@ -33,8 +48,6 @@ const ItemComponent = ({ meeting }) => {
     departmentId,
     siteId,
   } = meeting;
-
-  if (!meeting) return null;
 
   return (
     <View style={styles.container}>
@@ -49,7 +62,7 @@ const ItemComponent = ({ meeting }) => {
               color={SEC_TEXT_COLOR}
               icon="qrcode-scan"
               size={30}
-              onPress={() => console.log("scan pressed")}
+              onPress={() => navigation.navigate("TakeAttendanceView")}
             />
           )}
           right={(props) => (
@@ -59,7 +72,7 @@ const ItemComponent = ({ meeting }) => {
               // icon="arrow-right-drop-circle-outline"
               icon="order-alphabetical-ascending"
               size={35}
-              onPress={() => console.log("nav-to list pressed")}
+              onPress={() => navigation.navigate("MeetingAttendance", { meeting })}
             />
           )}
         />

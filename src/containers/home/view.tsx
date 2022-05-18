@@ -18,6 +18,8 @@ import MeetingContainer from "../meeting/index";
 import ProfileContainer from "../profile/index";
 import MyAttendancesContainer from "../myAttendances/index";
 import CreateMeeting from "../meeting/CreateMeeting";
+import TakeAttendanceView from "../attendance/viewTakeAttendance";
+import MeetingAttendance from "../meeting/MeetingAttendance";
 
 const MeetingsStack = createStackNavigator();
 const MeetingsStackScreen = () => {
@@ -29,6 +31,14 @@ const MeetingsStackScreen = () => {
     >
       <MeetingsStack.Screen name="Meeting" component={MeetingContainer} />
       <MeetingsStack.Screen name="CreateMeeting" component={CreateMeeting} />
+      <MeetingsStack.Screen
+        name="TakeAttendanceView"
+        component={TakeAttendanceView}
+      />
+      <MeetingsStack.Screen
+        name="MeetingAttendance"
+        component={MeetingAttendance}
+      />
     </MeetingsStack.Navigator>
   );
 };

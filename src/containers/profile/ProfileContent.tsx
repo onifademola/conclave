@@ -9,16 +9,10 @@ import {
   SEC_TEXT_COLOR,
   WHITE_FADED
 } from "../../styles/colors";
+import { ExtractInitials } from "../../consumers/Utils";
 import { meetingAttendance } from "../../mock/data";
 
 const mUser = meetingAttendance[0];
-
-const extractInitials = (name: string) => {
-  if (!name) return "";
-  const indexOfAt = name.indexOf("@");
-  const subName = name.slice(indexOfAt + 1);
-  return name.charAt(0).concat(subName.charAt(0)).toUpperCase();
-};
 
 const renderAvatar = () => (
   <Avatar.Image
@@ -33,7 +27,7 @@ const renderAvatar = () => (
 const renderAvatarText = () => (
   <Avatar.Text
     size={120}
-    label={extractInitials(mUser.attendee)}
+    label={ExtractInitials(mUser.email)}
     color={PRY_COLOR}
     labelStyle={{ fontWeight: "bold" }}
     style={{ backgroundColor: SEC_COLOR }}

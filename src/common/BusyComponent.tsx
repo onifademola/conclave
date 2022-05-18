@@ -1,17 +1,27 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { IconButton, Title } from "react-native-paper";
+import { ActivityIndicator } from 'react-native-paper';
 import { fontSize } from '../styles/fonts';
+
+const activities = [
+  "...we are sorting that, please wait.",
+  "...work in progress, please hold a sec.",
+  "...we are almost there, be patient.",
+
+];
 
 const baseColor = "black";
 
-const EmptyList = () => {
+const getIndex = () => Math.floor(Math.random() * activities.length);
+
+const BusyComponent = () => {
   return (
     <View style={styles.container}>
       <View style={styles.icon}>
-        <IconButton color={baseColor} icon="pail-off" size={80} />
+        <ActivityIndicator animating={true} size="large" color={baseColor} />
       </View>
-      <Title style={styles.title}>Sorry, nothing is in this list!</Title>
+      <Title style={styles.title}>{activities[getIndex()]}</Title>
     </View>
   );
 };
@@ -35,4 +45,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EmptyList;
+export default BusyComponent;

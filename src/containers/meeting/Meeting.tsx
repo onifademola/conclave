@@ -21,8 +21,7 @@ const renderAddIcon = () => {
   );
 };
 
-const Meeting = ({ navigation }) => {
-  console.log(navigation);
+const Meeting = () => {
   const meetingsList = meetings;
   const renderItem = ({ item }) => {
     return <ItemComponent meeting={item} />;
@@ -31,7 +30,6 @@ const Meeting = ({ navigation }) => {
   if (!meetingsList) return (
     <View style={styles.container}>
       <EmptyList />
-      {renderAddIcon(navigation)}
     </View>
   );
 

@@ -36,6 +36,7 @@ const CreateMeeting = () => {
     DateTimePickerAndroid.open({
       value: startDate,
       onChange: (event, selectedDate) => {
+        if (event.type === "dismissed") return;
         setMeetingDate(new Date(event.nativeEvent.timestamp));        
       },
       mode,
@@ -47,6 +48,7 @@ const CreateMeeting = () => {
     DateTimePickerAndroid.open({
       value: startDate,
       onChange: (event, selectedDate) => {
+        if (event.type === "dismissed") return;
         setStartDate(new Date(event.nativeEvent.timestamp));        
       },
       mode,
@@ -58,6 +60,7 @@ const CreateMeeting = () => {
     DateTimePickerAndroid.open({
       value: endDate,
       onChange: (event, selectedDate) => {
+        if (event.type === 'dismissed') return;
         setEndDate(new Date(event.nativeEvent.timestamp));
       },
       mode,
@@ -89,7 +92,7 @@ const CreateMeeting = () => {
       }}
       onSubmit={(values) => {
         console.log(values);
-        const finalValues = {...values, startDate, endDate};
+        const finalValues = { ...values, startDate, endDate };
         console.log(finalValues);
       }}
     >
@@ -130,7 +133,7 @@ const CreateMeeting = () => {
             <TouchableOpacity activeOpacity={0.7}>
               <IconButton
                 color={iconColor}
-                icon="plus-circle"
+                icon="calendar-month"
                 size={iconSize}
                 onPress={showDatePicker}
               />
@@ -151,7 +154,7 @@ const CreateMeeting = () => {
               <TouchableOpacity activeOpacity={0.7}>
                 <IconButton
                   color={iconColor}
-                  icon="plus-circle"
+                  icon="calendar-clock"
                   size={iconSize}
                   onPress={showStartTimePicker}
                 />
@@ -171,7 +174,7 @@ const CreateMeeting = () => {
               <TouchableOpacity activeOpacity={0.7}>
                 <IconButton
                   color={iconColor}
-                  icon="plus-circle"
+                  icon="calendar-clock"
                   size={iconSize}
                   onPress={showEndTimePicker}
                 />
