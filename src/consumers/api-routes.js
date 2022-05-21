@@ -6,5 +6,6 @@ export const ApiRoutes = {
   updateMeeting: "meeting/update", // "/id" + Body
   deleteMeeting: "meeting/delete", // "/id"
   checkIn: "attendance/new", //meetingId + Body
-  
+  getMeetingAttendance: "meetings/attendance", // {siteId}"
+  getMyAttendances: "meetings/attendance/me", // {userId}
 };
