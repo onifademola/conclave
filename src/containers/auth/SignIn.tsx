@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { Formik } from "formik";
 import { useDispatch } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 import { saveLoginData, reset } from "../../redux/user/userSlice";
 import { AppButton } from "../../common/AppButton";
 import AppTextInput from "../../common/AppTextInput";
@@ -17,21 +18,24 @@ interface Login {
 
 const SignIn = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const login = async (values: Login) => {
     setIsLoading(true);
     await HttpPost(ApiRoutes.login, values)
       .then(async (res) => {
-        await saveLoggedInUser(res.data);
         dispatch(saveLoginData(res.data));
-        if (!res.data) setIsLoading(false);
+        await saveLoggedInUser(res.data);
+        setIsLoading(false);
+        console.log(res.data);
+        // if (!res.data) setIsLoading(false);
       })
       .catch((error) => {
         console.log(error);
         setIsLoading(false);
       });
-  }
+  };
 
   if (isLoading) {
     return <BusyComponent />;

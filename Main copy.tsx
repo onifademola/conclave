@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
+import { createStackNavigator } from "@react-navigation/stack";
 import AuthNavigator from "./src/navigation/AuthNavigator";
 import AppNavigator from "./src/navigation/AppNavigator";
 import SplashNavigator from "./src/navigation/SplashNavigator";
-import { fetchLoggedInUser } from "./src/consumers/storage";
+import { fetchLoggedInUser, clearLoggedInUser } from "./src/consumers/storage";
 import {
   useFonts,
   RobotoCondensed_300Light,
@@ -15,6 +16,50 @@ import {
 } from "@expo-google-fonts/roboto-condensed";
 import { useSelector, useDispatch } from "react-redux";
 import { saveLoginData, reset } from "./src/redux/user/userSlice";
+
+const AppStack = createStackNavigator();
+const AuthStack = createStackNavigator();
+const SplashStack = createStackNavigator();
+const MainStack = createStackNavigator();
+
+const AppStackScreen = () => {
+  return (
+    <AppStack.Navigator
+      screenOptions={() => ({
+        headerShown: false,
+      })}
+    >
+      <AppStack.Screen
+        name="App"
+        component={AppNavigator}
+      />
+    </AppStack.Navigator>
+  );
+}
+
+const AuthStackScreen = () => {
+  return (
+    <AuthStack.Navigator
+      screenOptions={() => ({
+        headerShown: false,
+      })}
+    >
+      <AuthStack.Screen name="Auth" component={AuthNavigator} />
+    </AuthStack.Navigator>
+  );
+}
+
+const SplashStackScreen = () => {
+  return (
+    <SplashStack.Navigator
+      screenOptions={() => ({
+        headerShown: false,
+      })}
+    >
+      <SplashStack.Screen name="Splash" component={SplashNavigator} />
+    </SplashStack.Navigator>
+  );
+}
 
 const Main = () => {
   const loggedInUser = useSelector((state) => state.user.loggedInUser);
@@ -31,8 +76,9 @@ const Main = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const startUp = async () => {
+    console.log(loggedInUser)
     const user = await fetchLoggedInUser();
-    if (user) {
+    if (user) { console.log('user found')
       dispatch(saveLoginData(user));
       setLoggedIn(true);
       setIsLoading(false);
@@ -40,6 +86,13 @@ const Main = () => {
       setLoggedIn(false);
       setIsLoading(false);
     }
+  }
+
+  const handleLogout = () => {
+    setLoggedIn(false);
+    setIsLoading(false);
+    dispatch(reset());
+    clearLoggedInUser();
   }
 
   useEffect(() => {
@@ -53,20 +106,31 @@ const Main = () => {
   }, [loggedInUser]);
 
   if (isLoading) {
-    return <SplashNavigator />;
+    return <SplashStackScreen />;
   }
 
   if (!fontsLoaded) {
-    return <SplashNavigator />;
+    return <SplashStackScreen />;
   }
 
   if (!loggedIn) {
-    return <AuthNavigator />;
+    return <AuthStackScreen />;
   }
 
   return (
     <View style={styles.container}>
-      <AppNavigator />
+      {/* {loggedIn ? (
+        <AppStackScreen />
+      ) : (
+        <AuthStackScreen />
+      )} */}
+      <MainStack.Navigator
+        screenOptions={() => ({
+          headerShown: false,
+        })}
+      >
+        <MainStack.Screen name="AppBase" component={AppStackScreen} />
+      </MainStack.Navigator>
     </View>
   );
 };

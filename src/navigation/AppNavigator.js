@@ -3,11 +3,11 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { IconButton } from "react-native-paper";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
-import { useSelector, useDispatch } from "react-redux";
-import { saveLoginData, reset } from "../redux/user/userSlice";
-import { clearLoggedInUser } from "../consumers/storage";
-import { PRY_COLOR, TEXT_COLOR, SEC_COLOR, WHITE } from "../styles/colors";
+import { useDispatch } from "react-redux";
 import { Text, View, Image } from "react-native";
+import { reset } from "../redux/user/userSlice";
+import { clearLoggedInUser } from "../consumers/storage";
+import { PRY_COLOR, SEC_COLOR, WHITE, ACCENT } from "../styles/colors";
 import abi from "../../assets/abi.jpg";
 
 const Tab = createBottomTabNavigator();
@@ -18,25 +18,46 @@ import MyAttendancesContainer from "../containers/myAttendances/index";
 import CreateMeeting from "../containers/meeting/CreateMeeting";
 import TakeAttendanceView from "../containers/attendance/viewTakeAttendance";
 import MeetingAttendance from "../containers/meeting/MeetingAttendance";
-import AuthView from "../containers/auth/view";
+
+const commonHeaderStyle = {
+  backgroundColor: ACCENT,
+  //headerStatusBarHeight: 30,
+};
+
+const commonHeaderTitleStyle = {
+  fontSize: 25,
+};
 
 const MeetingsStack = createStackNavigator();
 const MeetingsStackScreen = () => {
   return (
     <MeetingsStack.Navigator
       screenOptions={() => ({
-        headerShown: false,
+        headerShown: true,
+        headerStyle: commonHeaderStyle,
+        headerShadowVisible: true,
+        headerBackTitleStyle: commonHeaderTitleStyle,
       })}
     >
-      <MeetingsStack.Screen name="Meeting" component={MeetingContainer} />
-      <MeetingsStack.Screen name="CreateMeeting" component={CreateMeeting} />
+      <MeetingsStack.Screen
+        name="Meeting"
+        component={MeetingContainer}
+        options={{ title: "MEETINGS" }}
+      />
+      <MeetingsStack.Screen
+        name="CreateMeeting"
+        component={CreateMeeting}
+        options={{ title: "NEW MEETING" }}
+      />
       <MeetingsStack.Screen
         name="TakeAttendanceView"
         component={TakeAttendanceView}
+        options={{ title: "TAKE ATTENDANCE" }}
       />
       <MeetingsStack.Screen
         name="MeetingAttendance"
         component={MeetingAttendance}
+        options={{ title: "MEETING ATTENDANCE" }}
       />
     </MeetingsStack.Navigator>
   );
@@ -47,10 +68,16 @@ const ProfileStackScreen = () => {
   return (
     <ProfileStack.Navigator
       screenOptions={() => ({
-        headerShown: false,
+        headerShown: true,
+        headerStyle: commonHeaderStyle,
+        headerBackTitleStyle: commonHeaderTitleStyle,
       })}
     >
-      <ProfileStack.Screen name="MyProfile" component={ProfileContainer} />
+      <ProfileStack.Screen
+        name="MyProfile"
+        component={ProfileContainer}
+        options={{ title: "PROFILE" }}
+      />
     </ProfileStack.Navigator>
   );
 };
@@ -60,15 +87,23 @@ const RecentStackScreen = () => {
   return (
     <RecentStack.Navigator
       screenOptions={() => ({
-        headerShown: false,
+        headerShown: true,
+        headerStyle: commonHeaderStyle,
+        headerBackTitleStyle: commonHeaderTitleStyle,
       })}
     >
-      <RecentStack.Screen name="MyRecent" component={MyAttendancesContainer} />
+      <RecentStack.Screen
+        name="MyRecent"
+        component={MyAttendancesContainer}
+        options={{ title: "MY ATTENDANCES" }}
+      />
     </RecentStack.Navigator>
   );
 };
 
 const LogoTitle = () => {
+  const dispatch = useDispatch();
+
   return (
     <View
       style={{
@@ -102,8 +137,9 @@ const LogoTitle = () => {
           color="white"
           icon="logout"
           size={28}
-          onPress={async () => {
-            await clearLoggedInUser().then(() => useDispatch(reset));
+          onPress={() => {
+            dispatch(reset());
+            clearLoggedInUser();
           }}
         />
       </View>
@@ -128,7 +164,6 @@ const AppNavigator = () => {
               : "play-back-circle-outline";
           }
 
-          // You can return any component that you like here!
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: WHITE,
@@ -155,17 +190,29 @@ const AppNavigator = () => {
       <Tab.Screen
         name="Meetings"
         component={MeetingsStackScreen}
-        options={{ headerTitle: (props) => <LogoTitle {...props} /> }}
+        options={{
+          headerTitle: (props) => (
+            <LogoTitle {...props} />
+          ),
+        }}
       />
       <Tab.Screen
         name="Profile"
         component={ProfileStackScreen}
-        options={{ headerTitle: (props) => <LogoTitle {...props} /> }}
+        options={{
+          headerTitle: (props) => (
+            <LogoTitle {...props} />
+          ),
+        }}
       />
       <Tab.Screen
         name="Recent"
         component={RecentStackScreen}
-        options={{ headerTitle: (props) => <LogoTitle {...props} /> }}
+        options={{
+          headerTitle: (props) => (
+            <LogoTitle {...props} />
+          ),
+        }}
       />
     </Tab.Navigator>
   );

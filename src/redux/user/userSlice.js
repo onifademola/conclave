@@ -12,6 +12,7 @@ const userSlice = createSlice({
       state.loggedInUser = action.payload;
     },
     reset: (state) => {
+      console.log("dispatched reset")
       state.loggedInUser = null;
     }
   },
