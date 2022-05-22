@@ -1,11 +1,14 @@
 import React from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { SvgUri } from "react-native-svg";
+import { IconButton } from "react-native-paper";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
+import { useSelector, useDispatch } from "react-redux";
+import { saveLoginData, reset } from "../redux/user/userSlice";
+import { clearLoggedInUser } from "../consumers/storage";
 import { PRY_COLOR, TEXT_COLOR, SEC_COLOR, WHITE } from "../styles/colors";
 import { Text, View, Image } from "react-native";
-import AppLogo from "../../assets/conclave.png";
+import abi from "../../assets/abi.jpg";
 
 const Tab = createBottomTabNavigator();
 
@@ -15,6 +18,7 @@ import MyAttendancesContainer from "../containers/myAttendances/index";
 import CreateMeeting from "../containers/meeting/CreateMeeting";
 import TakeAttendanceView from "../containers/attendance/viewTakeAttendance";
 import MeetingAttendance from "../containers/meeting/MeetingAttendance";
+import AuthView from "../containers/auth/view";
 
 const MeetingsStack = createStackNavigator();
 const MeetingsStackScreen = () => {
@@ -66,15 +70,44 @@ const RecentStackScreen = () => {
 
 const LogoTitle = () => {
   return (
-    // <SvgUri
-    //   width="100%"
-    //   height="100%"
-    //   uri="https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/debian.svg"
-    // />
-    <Image
-      //style={styles.logo}
-      source={AppLogo}
-    />
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "stretch",
+        alignContent: "space-between",
+      }}
+    >
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "flex-start",
+          alignItems: "center",
+        }}
+      >
+        <Image style={{ maxWidth: 40, maxHeight: 30 }} source={abi} />
+        <Text
+          style={{
+            fontFamily: "RobotoCondensed_300Light",
+            color: "white",
+            fontSize: 45,
+            //fontWeight: "900",
+          }}
+        >
+          Conclave
+        </Text>
+      </View>
+      <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+        <IconButton
+          color="white"
+          icon="logout"
+          size={28}
+          onPress={async () => {
+            await clearLoggedInUser().then(() => useDispatch(reset));
+          }}
+        />
+      </View>
+    </View>
   );
 };
 
@@ -101,19 +134,21 @@ const AppNavigator = () => {
         tabBarActiveTintColor: WHITE,
         tabBarInactiveTintColor: SEC_COLOR,
         headerStyle: {
-          // backgroundColor: PRY_COLOR,
-          backgroundColor: "transparent",
+          backgroundColor: "black",
         },
         headerTintColor: "#fff",
         headerTitleStyle: {
           fontWeight: "bold",
+          fontFamily: "RobotoCondensed_400Regular",
         },
         tabBarLabelStyle: {
-          fontSize: 16,
+          fontSize: 18,
+          fontFamily: "RobotoCondensed_400Regular",
         },
         tabBarActiveBackgroundColor: PRY_COLOR,
         tabBarStyle: {
           backgroundColor: "black",
+          fontFamily: "RobotoCondensed_400Regular",
         },
       })}
     >

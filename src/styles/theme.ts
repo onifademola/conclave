@@ -16,7 +16,6 @@ import {
   WHITE_FADED,
   TEXT_COLOR
 } from './colors';
-import { fontConfig } from "./fonts";
 
 const CombinedDefaultTheme = merge(PaperDefaultTheme, NavigationDefaultTheme);
 const CombinedDarkTheme = merge(PaperDarkTheme, NavigationDarkTheme);
@@ -25,8 +24,21 @@ const commonTheme = {
   roundness: 15,
   animation: {
     scale: 1.0,
-  },
-  fonts: configureFonts(fontConfig),
+  },  
+  fonts: {
+    regular: {
+      fontFamily: 'RobotoCondensed_400Regular',
+    },
+    medium: {
+      fontFamily: 'RobotoCondensed_400Regular',
+    },
+    light: {
+      fontFamily: 'RobotoCondensed_300Light',
+    },
+    thin: {
+      fontFamily: 'RobotoCondensed_300Light',
+    }
+  }  
 };
 
 const AppDefaultTheme = {

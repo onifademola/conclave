@@ -7,6 +7,7 @@ import {
   Paragraph,
 } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+import moment from "moment";
 import { ACCENT, SEC_TEXT_COLOR } from "../../styles/colors";
 import ModalAlertComponent, {
   ModalType,
@@ -56,7 +57,7 @@ const ItemComponent = ({ meeting }) => {
           titleStyle={styles.title}
           title={meetingName}
           subtitleStyle={styles.content}
-          subtitle={`From: ${startDate} - To: ${endDate}`}
+          subtitle={departmentId}
           left={(props) => (
             <IconButton
               color={SEC_TEXT_COLOR}
@@ -72,13 +73,20 @@ const ItemComponent = ({ meeting }) => {
               // icon="arrow-right-drop-circle-outline"
               icon="order-alphabetical-ascending"
               size={35}
-              onPress={() => navigation.navigate("MeetingAttendance", { meeting })}
+              onPress={() =>
+                navigation.navigate("MeetingAttendance", { meeting })
+              }
             />
           )}
         />
         <Content>
           <View>
-            <Tit style={styles.content}>{departmentId}</Tit>
+            <Tit style={{ ...styles.content, fontSize: 28, }}>{meetingName}</Tit>
+            <Tit style={{ ...styles.content, fontSize: 15, fontWeight: "800" }}>{`${moment(
+              startDate
+            ).format("dddd, MMMM DD, YYYY")} || ${moment(startDate).format(
+              "LT"
+            )} - ${moment(endDate).format("LT")}`}</Tit>
             <Paragraph style={styles.content}>{detail}</Paragraph>
           </View>
         </Content>
@@ -98,10 +106,12 @@ const styles = StyleSheet.create({
   },
   content: {
     color: SEC_TEXT_COLOR,
+    fontSize: 16,
   },
   title: {
     color: SEC_TEXT_COLOR,
-    fontWeight: "bold",
+    fontSize: 22,
+    // fontWeight: "900"
   },
 });
 

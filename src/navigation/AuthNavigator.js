@@ -1,27 +1,8 @@
-import { createSwitchNavigator } from "react-navigation";
-import { createAppContainer } from "react-navigation";
+import React from "react";
+import AuthContainer from "../containers/auth";
 
-import LoginScreen from "../screens/LoginScreen";
-import ForgotPassword from "../screens/ForgotPassword";
+const AuthNavigator = () => {
+  return <AuthContainer />;
+};
 
-const AuthNavigator = createSwitchNavigator(
-  {
-    Login: {
-      screen: LoginScreen,
-      navigationOptions: {
-        header: null,
-      },
-    },
-    ForgotPassword: {
-      screen: ForgotPassword,
-      navigationOptions: {
-        header: null,
-      },
-    },
-  },
-  {
-    initialRouteName: "Login",
-  }
-);
-
-export default createAppContainer(AuthNavigator);
+export default AuthNavigator;

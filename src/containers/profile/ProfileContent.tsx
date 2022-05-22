@@ -29,7 +29,7 @@ const renderAvatarText = () => (
     size={120}
     label={ExtractInitials(mUser.email)}
     color={PRY_COLOR}
-    labelStyle={{ fontWeight: "bold" }}
+    labelStyle={{ fontSize: 60 }}
     style={{ backgroundColor: SEC_COLOR }}
   />
 );
@@ -40,6 +40,7 @@ const renderDetail = () => {
       style={{
         flexDirection: "column",
         justifyContent: "flex-end",
+        paddingTop: 5,
         paddingLeft: 5,
         alignItems: "flex-end",
       }}
@@ -52,9 +53,9 @@ const renderDetail = () => {
       <View
         style={{
           flexDirection: "column",
-          justifyContent: "flex-end",
+          justifyContent: "flex-start",
           paddingLeft: 5,
-          alignItems: "flex-start",
+          alignItems: "flex-end",
         }}
       >
         <Text style={styles.text}>
@@ -90,21 +91,23 @@ const radiusRate = 90;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 0.5,
+    //flex: 0.5,
     borderTopLeftRadius: radiusRate,
     borderTopRightRadius: radiusRate,
     backgroundColor: ACCENT,
-    justifyContent: "flex-end",
-    padding: 15,
+    justifyContent: "flex-start",
+    //paddingBottom: DEVICE_HEIGHT * 0.05,
+    paddingRight: 15,
+    paddingLeft: 15,
   },
   subContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "flex-start",
   },
   profileName: {
-    fontSize: 24,
+    fontSize: 28,
     color: PRY_COLOR,
-    fontWeight: "bold",
     paddingLeft: 20,
     paddingTop: 40,
     alignItems: "flex-end",
@@ -114,7 +117,6 @@ const styles = StyleSheet.create({
     color: SEC_TEXT_COLOR,
     marginBottom: 0.5,
     fontSize: 18,
-    fontWeight: "800",
   },
 });
 

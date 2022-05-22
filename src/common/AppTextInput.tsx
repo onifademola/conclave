@@ -17,7 +17,7 @@ const AppTextInput = ({
 }) => {
   return (
     <View>
-      <Text style={{ fontSize: 14, color: "black", fontWeight: "bold" }}>
+      <Text style={{ fontSize: 14, color: "black" }}>
         {label}
       </Text>
       <TextInput

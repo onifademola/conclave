@@ -1,13 +1,10 @@
 import React from 'react';
-import { StyleSheet, View, Image, Text } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { Avatar } from "react-native-paper";
 import moment from "moment";
 import {
   PRY_COLOR,
   SEC_COLOR,
-  ACCENT,
-  SEC_TEXT_COLOR,
-  WHITE_FADED,
 } from "../../styles/colors";
 import { ExtractInitials } from '../../consumers/Utils';
 
@@ -17,7 +14,10 @@ const renderAvatarText = (email: string) => (
     size={avatarSize}
     label={ExtractInitials(email)}
     color={PRY_COLOR}
-    labelStyle={{ fontWeight: "bold" }}
+    labelStyle={{
+      fontFamily: "RobotoCondensed_400Regular",
+      fontSize: 28,
+    }}
     style={{ backgroundColor: SEC_COLOR }}
   />
 );
@@ -55,9 +55,9 @@ export default AdminAttendanceComponent;
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
     alignItems: "center",
-    borderBottomWidth: .5,
+    borderBottomWidth: 0.5,
     padding: 10,
   },
   pic: {
@@ -72,23 +72,20 @@ const styles = StyleSheet.create({
   },
   nameTxt: {
     marginLeft: 15,
-    fontWeight: "600",
     fontSize: 18,
-    // width: 170,
+    fontFamily: "RobotoCondensed_400Regular",
   },
   mblTxt: {
-    fontWeight: "200",
-    // color: "#777",
     fontSize: 13,
+    fontFamily: "RobotoCondensed_400Regular",
   },
   msgContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
   msgTxt: {
-    fontWeight: "400",
-    // color: "#008B8B",
-    fontSize: 12,
+    fontSize: 15,
     marginLeft: 15,
+    fontFamily: "RobotoCondensed_400Regular",
   },
 });

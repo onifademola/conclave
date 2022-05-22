@@ -45,9 +45,9 @@ const MeetingAttendance = (prop: any) => {
             subtitleStyle={styles.content}
             subtitle={`${moment(startDate).format(
               "dddd, MMMM Do YYYY"
-            )} [${moment(startDate).format("LT")} - To: ${moment(
+            )} || ${moment(startDate).format("LT")} - ${moment(
               endDate
-            ).format("LT")}]`}
+            ).format("LT")}`}
           />
           <Content>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -57,7 +57,7 @@ const MeetingAttendance = (prop: any) => {
           </Content>
         </Card>
       </View>
-      <SafeAreaView>
+      <SafeAreaView style={{ flex: 1 }}>
         {attendanceList.length ? (
           <FlatList
             data={attendanceList}
@@ -87,11 +87,10 @@ const styles = StyleSheet.create({
   },
   content: {
     color: WHITE,
-    fontSize: 14,
-    fontWeight: "bold",
+    fontSize: 16,
   },
   title: {
     color: WHITE,
-    fontWeight: "bold",
+    fontSize: 22,
   },
 });

@@ -1,15 +1,14 @@
 import axios from "axios";
-import { readData } from "./storage";
-import { AsynStorageKeys } from "../constants/defaults";
+import { ApiRoutes } from "./api-routes";
+import { fetchLoggedInUser } from "./storage";
 
 const devUrl = "https://localhost:44315/api/v1";
 const prodUrl = "https://abimealy.azurewebsites.net/api/v1";
 
-const baseUri = devUrl;
+const baseUri = prodUrl;
 
 const apiCall = async (method, uri, data = null) => {
-  const stored_user = await readData(AsynStorageKeys.user);
-  const read_user = JSON.parse(stored_user);
+  const read_user = uri !== ApiRoutes.login ? await fetchLoggedInUser() : "";
   return axios({
     method,
     url: `${baseUri}/${uri}`,
@@ -17,7 +16,7 @@ const apiCall = async (method, uri, data = null) => {
     headers: {
       "Content-Type": "application/json",
       // Accept: "application/json",
-      "x-auth-token": read_user.Token,
+      "x-auth-token": uri !== ApiRoutes.login ? read_user.Token : "",
     },
   })
     .then((res) => res)

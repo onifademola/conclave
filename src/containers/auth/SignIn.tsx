@@ -1,24 +1,39 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { Formik } from "formik";
+import { useDispatch } from "react-redux";
+import { saveLoginData, reset } from "../../redux/user/userSlice";
 import { AppButton } from "../../common/AppButton";
 import AppTextInput from "../../common/AppTextInput";
 import BusyComponent from "../../common/BusyComponent";
+import { ApiRoutes } from "../../consumers/api-routes";
+import { HttpPost } from "../../consumers/http";
+import { saveLoggedInUser } from "../../consumers/storage";
 
-const iconSize = 40;
-const iconColor = "black";
+interface Login {
+  email: string;
+  password: string;
+}
 
 const SignIn = () => {
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   
-  const login = (values) => {
-    console.log(values);
+  const login = async (values: Login) => {
     setIsLoading(true);
+    await HttpPost(ApiRoutes.login, values)
+      .then(async (res) => {
+        await saveLoggedInUser(res.data);
+        dispatch(saveLoginData(res.data));
+        if (!res.data) setIsLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsLoading(false);
+      });
   }
 
   if (isLoading) {
-    console.log("busy should run ");
-    console.log("busy should run ");
     return <BusyComponent />;
   }
 
@@ -89,6 +104,5 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     paddingTop: 60,
-    paddingBottom: "30%",
   },
 });

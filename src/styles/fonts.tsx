@@ -62,38 +62,47 @@ const fontSize = {
   largeButtonText: {
     fontSize: 16,
     fontWeight: "bold",
+    fontFamily: "RobotoCondensed_300Light",
   },
   largeHeaderText: {
     fontSize: 16,
+    fontFamily: "RobotoCondensed_400Regular",
   },
   largeNormalText: {
     fontSize: 16,
+    fontFamily: "RobotoCondensed_400Regular",
   },
   mediumButtonText: {
     fontSize: 14,
     color: "blue",
     fontWeight: "bold",
+    fontFamily: "RobotoCondensed_300Light",
   },
   mediumHeaderText: {
     fontSize: 14,
     color: "blue",
+    fontFamily: "RobotoCondensed_300Light",
   },
   mediumNormalText: {
     fontSize: 14,
     color: "blue",
+    fontFamily: "RobotoCondensed_300Light",
   },
   smallButtonText: {
     fontSize: 12,
     color: "blue",
     fontWeight: "bold",
+    fontFamily: "RobotoCondensed_300Light",
   },
   smallHeaderText: {
     fontSize: 12,
     color: "blue",
+    fontFamily: "RobotoCondensed_300Light",
   },
   smallNormalText: {
     fontSize: 12,
     color: "blue",
+    fontFamily: "RobotoCondensed_300Light",
   },
 };
 
