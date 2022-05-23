@@ -4,7 +4,10 @@ import { QRCode } from "react-native-custom-qr-codes-expo";
 import { DEVICE_HEIGHT } from "../../constants/device-dimensions";
 
 const ProfileHeader = ({ user }) => {
+  if (!user) return null;
+  
   const { Username } = user;
+
   return (
     <View style={styles.container}>
       <View style={styles.qrContainer}>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Avatar } from "react-native-paper";
 import moment from "moment";
@@ -7,12 +7,14 @@ import {
   SEC_COLOR,
 } from "../../styles/colors";
 import { ExtractInitials } from '../../consumers/Utils';
+import { ApiRoutes } from '../../consumers/api-routes';
+import { isUrlImageValid } from '../../consumers/Utils';
 
 const avatarSize = 50;
-const renderAvatarText = (email: string) => (
+const renderAvatarText = (Email: string) => (
   <Avatar.Text
     size={avatarSize}
-    label={ExtractInitials(email)}
+    label={ExtractInitials(Email)}
     color={PRY_COLOR}
     labelStyle={{
       fontFamily: "RobotoCondensed_400Regular",
@@ -30,26 +32,44 @@ const renderAvatar = (uri: string) => (
   />
 );
 
-const AdminAttendanceComponent = ({ item }) => {
-  const { name, email, arrivalTime, imageUri } = item;
+const AdminAttendanceComponent = ({ item }) => {  
+  const { FirstName, LastName, Email, ArrivalTime, ImagePath, Status } = item;
+  const imageUri = `${ApiRoutes.imageUriPrefix}/${ImagePath}`;
+  const [imageIsValid, setImageIsValid] = useState(false);
+
+  useEffect(() => {
+    fetch(imageUri).then((res) => {
+      setImageIsValid(res.status === 200);
+    });
+  }, []);
+
+  const getName = () => {
+    if (FirstName && LastName)
+      return `${FirstName} ${LastName} (${Email})`;
+    return Email;
+  }
+
   return (
     <View style={styles.row}>
-      {imageUri ? renderAvatar(imageUri) : renderAvatarText(email)}
+      {imageIsValid ? renderAvatar(imageUri) : renderAvatarText(Email)}      
       <View>
         <View style={styles.nameContainer}>
-          <Text style={styles.nameTxt} >
-            {email}
-          </Text>
+          <Text style={styles.nameTxt}>{getName()}</Text>
         </View>
-        <View style={styles.msgContainer}>          
-          <Text style={styles.msgTxt}>Arrival Time: {moment(arrivalTime).isValid() ? moment(arrivalTime).format("LT") : null } </Text>
+        <View style={styles.msgContainer}>
+          <Text style={styles.msgTxt}>
+            Arrival Time:{" "}
+            {moment(ArrivalTime).isValid()
+              ? moment(ArrivalTime).format("LT")
+              : null}{" "}
+          </Text>
+          <Text style={styles.msgTxt}>({Status})</Text>
         </View>
       </View>
     </View>
   );
 }
 
-// name, imgUrl, email, arrival time
 export default AdminAttendanceComponent;
 
 const styles = StyleSheet.create({

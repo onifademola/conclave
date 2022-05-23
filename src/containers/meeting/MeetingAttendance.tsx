@@ -13,6 +13,10 @@ import {
   WHITE,
   PRY_COLOR,
 } from "../../styles/colors";
+import MeetingStatus, {
+  MeetingStatusProp,
+  MeetingStatusType,
+} from "../../common/MeetingStatus";
 
 const { Title, Content } = Card;
 
@@ -32,7 +36,7 @@ const MeetingAttendance = (prop: any) => {
     LateAfter,
   } = prop.route.params.meeting;
   const [attendanceList, setAttendanceList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const renderItem = ({ item }) => {
     return <AdminAttendanceComponent item={item} />;
@@ -40,13 +44,13 @@ const MeetingAttendance = (prop: any) => {
 
   const fetchAttendanceList = async () => {
     setIsLoading(true);
-    const url = `${ApiRoutes.getMeetingAttendance}/loggedInUser.SiteId`;
+    const url = `${ApiRoutes.getMeetingAttendance}/${Id}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {
         setAttendanceList(res.data);
         setIsLoading(false);
       })
-      .catch(() => {
+      .catch((err) => {
         setIsLoading(true);
       });
   }
@@ -63,7 +67,37 @@ const MeetingAttendance = (prop: any) => {
     }
   }, []);
 
-  if (isLoading) return <BusyComponent />;
+  const getMeetingStatus = () => {
+    if (Done) {
+      const meeting: MeetingStatusProp = {
+        type: MeetingStatusType.Done,
+        status: "Done",
+        onPress: () => {},
+      };
+      return <MeetingStatus meetingStatus={meeting} />;
+    }
+
+    if (Cancelled) {
+      const meeting: MeetingStatusProp = {
+        type: MeetingStatusType.Cancelled,
+        status: "Cancelled",
+        onPress: () => {},
+      };
+      return <MeetingStatus meetingStatus={meeting} />;
+    }
+
+    if (Done == null && Cancelled == null) {
+      const meeting: MeetingStatusProp = {
+        type: MeetingStatusType.Pending,
+        status: "Pending",
+        onPress: () => {
+          // should only be able to this for a meeting that is pending
+          console.log("raise a modal to mark done or cancelled");
+        },
+      };
+      return <MeetingStatus meetingStatus={meeting} />;
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -82,21 +116,24 @@ const MeetingAttendance = (prop: any) => {
           <Content>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <Tit style={styles.content}>{Department}</Tit>
-              <Text>Search</Text>
+              {getMeetingStatus()}
+              {/* <Text>Search</Text> */}
             </View>
           </Content>
         </Card>
       </View>
       <SafeAreaView style={{ flex: 1 }}>
-        {attendanceList && attendanceList.length ? (
-          <FlatList
-            data={attendanceList}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.Id}
-          />
-        ) : (
-          <EmptyList />
-        )}
+        { isLoading ? <BusyComponent />  : 
+          (attendanceList && attendanceList.length ? (
+            <FlatList
+              data={attendanceList}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.Id}
+            />
+          ) : (
+            <EmptyList />
+          ))
+        }
       </SafeAreaView>
     </View>
   );

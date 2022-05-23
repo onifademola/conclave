@@ -1,25 +1,21 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Avatar, Headline, Text } from "react-native-paper";
-import { useSelector } from "react-redux";
 import {
   PRY_COLOR,
   SEC_COLOR,
   ACCENT,
   SEC_TEXT_COLOR,
-  WHITE_FADED,
 } from "../../styles/colors";
 import { ExtractInitials } from "../../consumers/Utils";
-import { meetingAttendance } from "../../mock/data";
+import { ApiRoutes } from "../../consumers/api-routes";
 
-const renderAvatar = ({ ImagePath }) => (
+const renderAvatar = (uri: string) => (
   <Avatar.Image
     size={120}
     style={{ backgroundColor: SEC_COLOR }}
-    source={{
-      uri: { ImagePath },
-    }}
+    source={{ uri }}
   />
 );
 
@@ -57,10 +53,12 @@ const renderDetail = ({ DepartmentName, Username, SiteName }) => {
           alignItems: "flex-end",
         }}
       >
-        <Text style={styles.text}>
-          <Ionicons name="ios-mail-sharp" size={18} color={SEC_TEXT_COLOR} />
-          {Username}
-        </Text>
+        <View style={{ flexDirection: "row" }}>
+          <Text style={{ flexWrap: "wrap", ...styles.text }}>
+            <Ionicons name="ios-mail-sharp" size={18} color={SEC_TEXT_COLOR} />
+            {Username}
+          </Text>
+        </View>
         <Text style={styles.text}>
           <Ionicons name="ios-people" size={18} color={SEC_TEXT_COLOR} />
           {DepartmentName.toLocaleUpperCase()}
@@ -75,8 +73,18 @@ const renderDetail = ({ DepartmentName, Username, SiteName }) => {
 };
 
 const ProfileContent = ({ user }) => {
-  const getName = () => {
-    const { FirstName, LastName, Username } = user;
+  if (!user) return null;
+  const { FirstName, LastName, Username, ImagePath } = user;
+  const imageUri = `${ApiRoutes.imageUriPrefix}/${ImagePath}`;
+  const [imageIsValid, setImageIsValid] = useState(false);
+
+  useEffect(() => {
+    fetch(imageUri).then((res) => {
+      setImageIsValid(res.status === 200);
+    });
+  }, []);
+
+  const getName = () => {    
     if (FirstName && LastName) {
       return `${FirstName} ${LastName}`;
     } else {
@@ -86,7 +94,7 @@ const ProfileContent = ({ user }) => {
   return (
     <View style={styles.container}>
       <View style={styles.subContainer}>
-        {renderAvatarText(user)}
+        {imageIsValid ? renderAvatar(imageUri) : renderAvatarText(user)}
         {renderDetail(user)}
       </View>
       <Headline style={styles.profileName}>{getName()}</Headline>

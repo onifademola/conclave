@@ -18,6 +18,7 @@ import AppTextInput from "../../common/AppTextInput";
 import { SEC_COLOR } from "../../styles/colors";
 import CommonStyles from "../../styles/common";
 import BusyComponent from "../../common/BusyComponent";
+import ModalAlertComponent from "../../common/ModalAlertComponent";
 
 const iconSize = 40;
 const iconColor = "black";
@@ -35,6 +36,20 @@ const CreateMeeting = () => {
   const [value, setValue] = useState(null);
   const [departmentId, setDepartmentId] = useState(0);
   const [departments, setDepartments] = useState([]);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (mounted) {
+      fetchDepartments();
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const fetchDepartments = async () => {
     setIsLoading(true);
@@ -59,20 +74,24 @@ const CreateMeeting = () => {
       .catch(() => setIsLoading(false));
   };
 
-  useEffect(() => {
-    let mounted = true;
-
-    if (mounted) {
-      fetchDepartments();
-    }
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
   const changeClockMode = () => {
     setShowMode(!showMode);
+  };
+
+  const showModalSuccess = () => {
+    setShowSuccessModal(true);
+    setTimeout(() => {
+      setShowSuccessModal(false);
+    }, 2000);
+    return true;
+  };
+
+  const showModalError = () => {
+    setShowErrorModal(true);
+    setTimeout(() => {
+      setShowErrorModal(false);
+    }, 2000);
+    return true;
   };
 
   const convertedStartDate = () =>

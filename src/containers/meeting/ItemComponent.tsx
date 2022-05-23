@@ -12,8 +12,9 @@ import { ACCENT, SEC_TEXT_COLOR } from "../../styles/colors";
 import ModalAlertComponent, {
   ModalType,
 } from "../../common/ModalAlertComponent";
+import MeetingStatus, { MeetingStatusProp, MeetingStatusType } from "../../common/MeetingStatus";
 
-interface Meeting {
+interface MeetingProp {
   Id: string;
   MeetingName: string;
   StartDate: string;
@@ -53,43 +54,87 @@ const ItemComponent = ({ meeting }) => {
     LateAfter
   } = meeting;
 
+  const getMeetingStatus = () => {
+    if (Done) {      
+      const meeting: MeetingStatusProp = {
+        type: MeetingStatusType.Done,
+        status: "Done",
+        onPress: () => {},
+      };
+      return <MeetingStatus meetingStatus={meeting} />;
+    }
+
+    if (Cancelled) {
+      const meeting: MeetingStatusProp = {
+        type: MeetingStatusType.Cancelled,
+        status: "Cancelled",
+        onPress: () => {},
+      };
+      return <MeetingStatus meetingStatus={meeting} />;
+    }
+
+    if (Done == null && Cancelled == null) {
+      const meeting: MeetingStatusProp = {
+        type: MeetingStatusType.Pending,
+        status: "Pending",
+        onPress: () => { // should only be able to this for a meeting that is pending
+          console.log("raise a modal to mark done or cancelled")
+        },
+      };
+      return <MeetingStatus meetingStatus={meeting} />;
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Card style={styles.card}>
         <Title
           titleStyle={styles.title}
-          title={MeetingName}
+          title={getMeetingStatus()}
           subtitleStyle={styles.content}
           subtitle={Department}
           left={(props) => (
             <IconButton
               color={SEC_TEXT_COLOR}
               icon="qrcode-scan"
-              size={30}
-              onPress={() => navigation.navigate("TakeAttendanceView", {meeting})}
+              size={35}
+              onPress={() =>
+                navigation.navigate("TakeAttendanceView", { meeting })
+              }
             />
           )}
           right={(props) => (
-            <IconButton
-              {...props}
-              color={SEC_TEXT_COLOR}
-              // icon="arrow-right-drop-circle-outline"
-              icon="order-alphabetical-ascending"
-              size={35}
-              onPress={() =>
-                navigation.navigate("MeetingAttendance", { meeting })
-              }
-            />
+            <View style={{ flexDirection: "row" }}>
+              <IconButton
+                {...props}
+                color={SEC_TEXT_COLOR}
+                icon="calendar-edit"
+                size={35}
+                onPress={() =>
+                  //navigation.navigate("MeetingAttendance", { meeting })
+                  console.log("edit this item")
+                }
+              />
+              <IconButton
+                {...props}
+                color={SEC_TEXT_COLOR}
+                icon="order-alphabetical-ascending"
+                size={35}
+                onPress={() =>
+                  navigation.navigate("MeetingAttendance", { meeting })
+                }
+              />
+            </View>
           )}
         />
         <Content>
           <View>
-            <Tit style={{ ...styles.content, fontSize: 28, }}>{MeetingName}</Tit>
-            <Tit style={{ ...styles.content, fontSize: 15, fontWeight: "800" }}>{`${moment(
+            <Tit style={{ ...styles.content, fontSize: 28 }}>{MeetingName}</Tit>
+            <Tit
+              style={{ ...styles.content, fontSize: 15, fontWeight: "800" }}
+            >{`${moment(StartDate).format("dddd, MMMM DD, YYYY")} || ${moment(
               StartDate
-            ).format("dddd, MMMM DD, YYYY")} || ${moment(StartDate).format(
-              "LT"
-            )} - ${moment(EndDate).format("LT")}`}</Tit>
+            ).format("LT")} - ${moment(EndDate).format("LT")}`}</Tit>
             <Paragraph style={styles.content}>{Detail}</Paragraph>
           </View>
         </Content>
@@ -113,7 +158,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: SEC_TEXT_COLOR,
-    fontSize: 22,
+    fontSize: 10,
     // fontWeight: "900"
   },
 });
