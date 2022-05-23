@@ -14,10 +14,10 @@ import ModalAlertComponent, {
 } from "../../common/ModalAlertComponent";
 
 interface Meeting {
-  id: string;
-  meetingName: string;
-  startDate: string;
-  endDate: string;
+  Id: string;
+  MeetingName: string;
+  StartDate: string;
+  EndDate: string;
   detail: string;
   departmentId: string;
   siteId: string;
@@ -40,14 +40,17 @@ const ItemComponent = ({ meeting }) => {
   if (!meeting) return null;
   const navigation = useNavigation();
   const {
-    id,
-    meetingName,
-    startDate,
-    endDate,
-    detail,
-    createdBy,
-    departmentId,
-    siteId,
+    Id,
+    MeetingName,
+    StartDate,
+    EndDate,
+    Detail,
+    CreatedBy,
+    Department,
+    Site,
+    Done,
+    Cancelled,
+    LateAfter
   } = meeting;
 
   return (
@@ -55,15 +58,15 @@ const ItemComponent = ({ meeting }) => {
       <Card style={styles.card}>
         <Title
           titleStyle={styles.title}
-          title={meetingName}
+          title={MeetingName}
           subtitleStyle={styles.content}
-          subtitle={departmentId}
+          subtitle={Department}
           left={(props) => (
             <IconButton
               color={SEC_TEXT_COLOR}
               icon="qrcode-scan"
               size={30}
-              onPress={() => navigation.navigate("TakeAttendanceView")}
+              onPress={() => navigation.navigate("TakeAttendanceView", {meeting})}
             />
           )}
           right={(props) => (
@@ -81,13 +84,13 @@ const ItemComponent = ({ meeting }) => {
         />
         <Content>
           <View>
-            <Tit style={{ ...styles.content, fontSize: 28, }}>{meetingName}</Tit>
+            <Tit style={{ ...styles.content, fontSize: 28, }}>{MeetingName}</Tit>
             <Tit style={{ ...styles.content, fontSize: 15, fontWeight: "800" }}>{`${moment(
-              startDate
-            ).format("dddd, MMMM DD, YYYY")} || ${moment(startDate).format(
+              StartDate
+            ).format("dddd, MMMM DD, YYYY")} || ${moment(StartDate).format(
               "LT"
-            )} - ${moment(endDate).format("LT")}`}</Tit>
-            <Paragraph style={styles.content}>{detail}</Paragraph>
+            )} - ${moment(EndDate).format("LT")}`}</Tit>
+            <Paragraph style={styles.content}>{Detail}</Paragraph>
           </View>
         </Content>
       </Card>

@@ -1,34 +1,31 @@
 import axios from "axios";
-import { ApiRoutes } from "./api-routes";
-import { fetchLoggedInUser } from "./storage";
 
 const devUrl = "https://localhost:44315/api/v1";
 const prodUrl = "https://abimealy.azurewebsites.net/api/v1";
 
 const baseUri = prodUrl;
 
-const apiCall = async (method, uri, data = null) => {
-  const read_user = uri !== ApiRoutes.login ? await fetchLoggedInUser() : "";
+const apiCall = async (token, method, uri, data = null) => {
   return axios({
     method,
     url: `${baseUri}/${uri}`,
     data,
     headers: {
       "Content-Type": "application/json",
-      // Accept: "application/json",
-      "x-auth-token": uri !== ApiRoutes.login ? read_user.Token : "",
+      "x-auth-token": token,
     },
   })
     .then((res) => res)
     .catch((err) => err);
 }
 
-export const HttpGet = async (uri) => apiCall("get", uri, null);
+export const HttpGet = async (token = "", uri) => apiCall(token, "get", uri, null);
 
-export const HttpPost = async (uri, data) => apiCall("post", uri, data);
+export const HttpPost = async (token, uri, data) => apiCall(token, "post", uri, data);
 
-export const HttpPut = async (uri, data) => apiCall("put", uri, data);
+export const HttpPut = async (token, uri, data) => apiCall(token, "put", uri, data);
 
-export const HttpPatch = async (uri, data) => apiCall("patch", uri, data);
+export const HttpPatch = async (token, uri, data) =>
+  apiCall(token, "patch", uri, data);
 
-export const HttpDelete = async (uri) => apiCall("delete", uri, null);
+export const HttpDelete = async (token, uri) => apiCall(token, "delete", uri, null);

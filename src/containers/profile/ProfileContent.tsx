@@ -1,40 +1,39 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Title, Avatar, Headline, Text } from "react-native-paper";
+import { Avatar, Headline, Text } from "react-native-paper";
+import { useSelector } from "react-redux";
 import {
   PRY_COLOR,
   SEC_COLOR,
   ACCENT,
   SEC_TEXT_COLOR,
-  WHITE_FADED
+  WHITE_FADED,
 } from "../../styles/colors";
 import { ExtractInitials } from "../../consumers/Utils";
 import { meetingAttendance } from "../../mock/data";
 
-const mUser = meetingAttendance[0];
-
-const renderAvatar = () => (
+const renderAvatar = ({ ImagePath }) => (
   <Avatar.Image
     size={120}
     style={{ backgroundColor: SEC_COLOR }}
     source={{
-      uri: "https://raw.githubusercontent.com/AboutReact/sampleresource/master/plus_icon.png",
+      uri: { ImagePath },
     }}
   />
 );
 
-const renderAvatarText = () => (
+const renderAvatarText = ({ Username }) => (
   <Avatar.Text
     size={120}
-    label={ExtractInitials(mUser.email)}
+    label={ExtractInitials(Username)}
     color={PRY_COLOR}
     labelStyle={{ fontSize: 60 }}
     style={{ backgroundColor: SEC_COLOR }}
   />
 );
 
-const renderDetail = () => {
+const renderDetail = ({ DepartmentName, Username, SiteName }) => {
   return (
     <View
       style={{
@@ -60,15 +59,15 @@ const renderDetail = () => {
       >
         <Text style={styles.text}>
           <Ionicons name="ios-mail-sharp" size={18} color={SEC_TEXT_COLOR} />
-          {" ade@we.com"}
+          {Username}
         </Text>
         <Text style={styles.text}>
           <Ionicons name="ios-people" size={18} color={SEC_TEXT_COLOR} />
-          {" SOLUTIONS"}
+          {DepartmentName.toLocaleUpperCase()}
         </Text>
         <Text style={styles.text}>
           <Ionicons name="ios-home-sharp" size={18} color={SEC_TEXT_COLOR} />
-          {" Onitsha"}
+          {SiteName}
         </Text>
       </View>
     </View>
@@ -76,13 +75,21 @@ const renderDetail = () => {
 };
 
 const ProfileContent = ({ user }) => {
+  const getName = () => {
+    const { FirstName, LastName, Username } = user;
+    if (FirstName && LastName) {
+      return `${FirstName} ${LastName}`;
+    } else {
+      return Username;
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.subContainer}>
-        {renderAvatarText()}
-        {renderDetail()}
+        {renderAvatarText(user)}
+        {renderDetail(user)}
       </View>
-      <Headline style={styles.profileName}>Joan Erukpe Bro. Lasisi</Headline>
+      <Headline style={styles.profileName}>{getName()}</Headline>
     </View>
   );
 };

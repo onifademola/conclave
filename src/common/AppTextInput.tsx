@@ -14,12 +14,11 @@ const AppTextInput = ({
   multiline = false,
   onPressIn,
   style,
+  keyboardType = "default",
 }) => {
   return (
     <View>
-      <Text style={{ fontSize: 14, color: "black" }}>
-        {label}
-      </Text>
+      <Text style={{ fontSize: 14, color: "black" }}>{label}</Text>
       <TextInput
         onChangeText={onChangeText}
         onBlur={onBlur}
@@ -32,6 +31,7 @@ const AppTextInput = ({
         numberOfLines={multiline ? 4 : 1}
         clearButtonMode="always"
         onPressIn={onPressIn}
+        keyboardType={keyboardType}
       />
     </View>
   );

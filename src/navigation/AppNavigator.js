@@ -188,30 +188,24 @@ const AppNavigator = () => {
       })}
     >
       <Tab.Screen
-        name="Meetings"
-        component={MeetingsStackScreen}
-        options={{
-          headerTitle: (props) => (
-            <LogoTitle {...props} />
-          ),
-        }}
-      />
-      <Tab.Screen
         name="Profile"
         component={ProfileStackScreen}
         options={{
-          headerTitle: (props) => (
-            <LogoTitle {...props} />
-          ),
+          headerTitle: (props) => <LogoTitle {...props} />,
+        }}
+      />
+      <Tab.Screen
+        name="Meetings"
+        component={MeetingsStackScreen}
+        options={{
+          headerTitle: (props) => <LogoTitle {...props} />,
         }}
       />
       <Tab.Screen
         name="Recent"
         component={RecentStackScreen}
         options={{
-          headerTitle: (props) => (
-            <LogoTitle {...props} />
-          ),
+          headerTitle: (props) => <LogoTitle {...props} />,
         }}
       />
     </Tab.Navigator>

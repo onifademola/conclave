@@ -1,11 +1,19 @@
-import React from 'react';
-import { SafeAreaView, View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, 
+  View, 
+  FlatList, 
+  StyleSheet, 
+  TouchableOpacity, 
+  RefreshControl
+} from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
 import ItemComponent from './ItemComponent';
 import EmptyList from '../../common/EmptyList';
-
-import { meetings } from '../../mock/data';
+import { ApiRoutes } from "../../consumers/api-routes";
+import { HttpGet } from "../../consumers/http";
+import BusyComponent from '../../common/BusyComponent';
 
 const renderAddIcon = () => {
   const navigation = useNavigation();
@@ -22,23 +30,61 @@ const renderAddIcon = () => {
 };
 
 const Meeting = () => {
-  const meetingsList = meetings;
+  const loggedInUser = useSelector(state => state.user.loggedInUser);
+  const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [meetings, setMeetings] = useState([]);
+
+  useEffect(() => {
+    fetchMeetings();
+  }, []);
+
+  const fetchMeetings = async () => {
+    const url = `${ApiRoutes.getMeetings}/${loggedInUser.SiteId}`;
+    await HttpGet(loggedInUser.Token, url)
+      .then((res) => {        
+        setMeetings(res.data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+      });
+  };
+  
+  const onRefresh = async () => {
+    setRefreshing(true);
+    const url = `${ApiRoutes.getMeetings}/${loggedInUser.SiteId}`;
+    await HttpGet(loggedInUser.Token, url)
+      .then((res) => {        
+        setMeetings(res.data);
+        setRefreshing(false);
+      })
+      .catch((err) => {
+        setRefreshing(false);
+      });
+  };
+  
   const renderItem = ({ item }) => {
     return <ItemComponent meeting={item} />;
   };
 
-  if (!meetingsList) return (
+  if (isLoading) return <BusyComponent />;
+
+  if (!meetings) return (
     <View style={styles.container}>
       <EmptyList />
     </View>
   );
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1, justifyContent: "flex-start", }}>
       <FlatList
-        data={meetingsList}
+        data={meetings}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.Id}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
       {renderAddIcon()}
     </SafeAreaView>
@@ -47,7 +93,7 @@ const Meeting = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1,    
   },
   icon: {
     position: "absolute",

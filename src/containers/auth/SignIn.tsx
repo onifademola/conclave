@@ -23,16 +23,13 @@ const SignIn = () => {
 
   const login = async (values: Login) => {
     setIsLoading(true);
-    await HttpPost(ApiRoutes.login, values)
+    await HttpPost("tt", ApiRoutes.login, values)
       .then(async (res) => {
         dispatch(saveLoginData(res.data));
         await saveLoggedInUser(res.data);
         setIsLoading(false);
-        console.log(res.data);
-        // if (!res.data) setIsLoading(false);
       })
       .catch((error) => {
-        console.log(error);
         setIsLoading(false);
       });
   };

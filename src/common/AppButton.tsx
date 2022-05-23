@@ -15,25 +15,8 @@ interface buttonProps {
   onPressAction: Function,
 }
 
-// const AppButton = (props: buttonProps) => {
-//   const { name, icon, onPressAction, title = name } = props;
-//   return (
-//     <TouchableOpacity style={styles.button} onPress={onPressAction}>
-//       {icon && (
-//         <IconButton
-//           color="white"
-//           icon="plus-circle"
-//           size={20}
-//           style={{ padding: 0 }}
-//         />
-//       )}
-//       <Text style={styles.text}>{title.toLocaleUpperCase()}</Text>
-//     </TouchableOpacity>
-//   );
-// };
-
 export const AppButton = (props: buttonProps) => {
-  const { name, icon, onPressAction, title = name } = props;
+  const { name, icon = "content-save-check", onPressAction, title = name } = props;
   return (
     <TouchableOpacity onPress={() => onPressAction()}>
       <Button
@@ -50,7 +33,7 @@ export const AppButton = (props: buttonProps) => {
 };
 
 export const AppButtonSmall = (props: buttonProps) => {
-  const { name, icon, onPressAction, title = name } = props;
+  const { name, icon = "content-save-check", onPressAction, title = name } = props;
   return (
     <TouchableOpacity onPress={() => onPressAction()}>
       <Button
