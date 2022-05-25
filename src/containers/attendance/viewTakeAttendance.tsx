@@ -18,7 +18,7 @@ interface Attendance {
 }
 
 const TakeAttendanceView = (prop: any) => {
-  const loggedInUser = useSelector(state => state.user.loggedInUser);
+  const appUser = useSelector(state => state.user.loggedInUser);
   const {
     Id,
     MeetingName,
@@ -30,6 +30,7 @@ const TakeAttendanceView = (prop: any) => {
     LateAfter,
   } = prop.route.params.meeting;
   useKeepAwake();
+  const [loggedInUser, setLoggedInUser] = useState(appUser);
   const [hasPermission, setHasPermission] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

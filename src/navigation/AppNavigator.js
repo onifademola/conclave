@@ -147,7 +147,7 @@ const LogoTitle = () => {
   );
 };
 
-const AppNavigator = () => {
+const AppNavigator = ({ isUserAdmin }) => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -194,13 +194,17 @@ const AppNavigator = () => {
           headerTitle: (props) => <LogoTitle {...props} />,
         }}
       />
-      <Tab.Screen
-        name="Meetings"
-        component={MeetingsStackScreen}
-        options={{
-          headerTitle: (props) => <LogoTitle {...props} />,
-        }}
-      />
+      {
+        isUserAdmin ? (
+          <Tab.Screen
+            name="Meetings"
+            component={MeetingsStackScreen}
+            options={{
+              headerTitle: (props) => <LogoTitle {...props} />,
+            }}
+          />
+        ) : null
+      }
       <Tab.Screen
         name="Recent"
         component={RecentStackScreen}

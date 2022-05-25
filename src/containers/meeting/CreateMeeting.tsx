@@ -25,8 +25,9 @@ const iconColor = "black";
 const dateTimeBackgroundColor = SEC_COLOR;
 
 const CreateMeeting = () => {
-  const loggedInUser = useSelector((state) => state.user.loggedInUser);
+  const appUser = useSelector((state) => state.user.loggedInUser);
   const navigation = useNavigation();
+  const [loggedInUser, setLoggedInUser] = useState(appUser);
   const [isLoading, setIsLoading] = useState(true);
   const [meetingDate, setMeetingDate] = useState(new Date());
   const [startDate, setStartDate] = useState(new Date());

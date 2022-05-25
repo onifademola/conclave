@@ -30,8 +30,8 @@ const renderAddIcon = () => {
 };
 
 const Meeting = () => {
-  const loggedInUser = useSelector((state) => state.user.loggedInUser);
-  
+  const appUser = useSelector((state) => state.user.loggedInUser);
+  const [loggedInUser, setLoggedInUser] = useState(appUser);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [meetings, setMeetings] = useState([]);
@@ -41,7 +41,7 @@ const Meeting = () => {
   }, []);
 
   const fetchMeetings = async () => {
-    const url = `${ApiRoutes.getMeetings}/${loggedInUser.SiteId}`;
+    const url = `${ApiRoutes.getMeetings}/${loggedInUser.SiteId || ""}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {        
         setMeetings(res.data);
@@ -105,8 +105,6 @@ const Meeting = () => {
   const renderItem = ({ item }) => {
     return <ItemComponent meeting={item} UpdateMeeting={UpdateMeeting} DeleteMeeting={DeleteMeeting} />;
   };
-
-  if (!loggedInUser) return <View></View>;
 
   if (isLoading) return <BusyComponent />;
 

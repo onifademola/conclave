@@ -21,7 +21,7 @@ import MeetingStatus, {
 const { Title, Content } = Card;
 
 const MeetingAttendance = (prop: any) => {
-  const loggedInUser = useSelector((state) => state.user.loggedInUser);
+  const appUser = useSelector((state) => state.user.loggedInUser);
   
   const {
     Id,
@@ -36,6 +36,7 @@ const MeetingAttendance = (prop: any) => {
     Cancelled,
     LateAfter,
   } = prop.route.params.meeting;
+  const [loggedInUser, setLoggedInUser] = useState(appUser);
   const [attendanceList, setAttendanceList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -45,7 +46,7 @@ const MeetingAttendance = (prop: any) => {
 
   const fetchAttendanceList = async () => {
     setIsLoading(true);
-    const url = `${ApiRoutes.getMeetingAttendance}/${Id}`;
+    const url = `${ApiRoutes.getMeetingAttendance}/${Id || ""}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {
         setAttendanceList(res.data);
@@ -108,8 +109,6 @@ const MeetingAttendance = (prop: any) => {
     }
     return "";
   }
-
-  if (!loggedInUser) return <View></View>;
 
   return (
     <View style={styles.container}>

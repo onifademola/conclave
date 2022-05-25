@@ -26,9 +26,9 @@ const SignIn = () => {
       .then(async (res) => {
         if (res && res.status === 200) {
           setLogInFailed(false);
-          setIsLoading(false);
           dispatch(saveLoginData(res.data));
           await saveLoggedInUser(res.data);
+          setIsLoading(false);
         } else {
           setLogInFailed(true);
           setIsLoading(false);

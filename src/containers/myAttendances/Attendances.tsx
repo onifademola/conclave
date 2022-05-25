@@ -8,15 +8,16 @@ import { ApiRoutes } from '../../consumers/api-routes';
 import AttendanceItem from './AttendanceItem';
 
 const Attendances = () => {
-  const loggedInUser = useSelector(state => state.user.loggedInUser);
-  
-  const { Username } = loggedInUser;
+  const appUser = useSelector(state => state.user.loggedInUser);
+  const [loggedInUser, setLoggedInUser] = useState(appUser);
   const [attendanceList, setAttendanceList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  
+  const { Username } = loggedInUser;
 
   const fetchAttendanceList = async () => {
     setIsLoading(true);
-    const url = `${ApiRoutes.getMyAttendances}/${Username}`;
+    const url = `${ApiRoutes.getMyAttendances}/${Username || ""}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {
         setAttendanceList(res.data);
@@ -42,8 +43,6 @@ const Attendances = () => {
   const renderItem = ({ item }) => {
     return <AttendanceItem item={item} />;
   };
-
-  if (!loggedInUser) return <View></View>;
 
   return (
     <SafeAreaView

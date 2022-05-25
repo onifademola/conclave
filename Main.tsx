@@ -30,10 +30,12 @@ const Main = () => {
   const dispatch = useDispatch();
   const [loggedIn, setLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUserAdmin, setIsUserAdmin] = useState(false);
 
   const startUp = async () => {
     const user = await fetchLoggedInUser();
     if (user) {
+      setIsUserAdmin(user.Roles.includes("Meeting"));
       const isTokenDateValid = isMeetingValidForAttendance(user.ValidTo, new Date());
       if (isTokenDateValid) {
         dispatch(saveLoginData(user));
@@ -60,6 +62,7 @@ const Main = () => {
         new Date()
       );
       if (isTokenDateValid) {
+        setIsUserAdmin(loggedInUser.Roles.includes("Meeting"));
         setLoggedIn(true);
         return;
       } else {
@@ -83,7 +86,7 @@ const Main = () => {
 
   return (
     <View style={styles.container}>
-      <AppNavigator />
+      <AppNavigator isUserAdmin={isUserAdmin} />
     </View>
   );
 };
