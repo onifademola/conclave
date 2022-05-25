@@ -5,17 +5,19 @@ import ProfileHeader from "./ProfileHeader";
 import ProfileContent from './ProfileContent';
 import { LINEAR_GRADIENT_COLORS } from "../../styles/colors";
 import commonStyles from '../../styles/common';
+import { View } from 'react-native';
 
 const ProfileView = () => {
-  const user = useSelector(state => state.user.loggedInUser);
+  const loggedInUser = useSelector((state) => state.user.loggedInUser);
+  if (!loggedInUser) return <View></View>;
   return (
     <LinearGradient
       colors={LINEAR_GRADIENT_COLORS}
       style={commonStyles.viewContainer}
     >
       {/* <ScreenHeader title="Profile" /> */}
-      <ProfileHeader user={user} />
-      <ProfileContent user={user} />
+      <ProfileHeader user={loggedInUser} />
+      <ProfileContent user={loggedInUser} />
     </LinearGradient>
   );
 };

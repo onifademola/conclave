@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import { View, StyleSheet, FlatList, SafeAreaView } from 'react-native';
-import { Card, IconButton, Title as Tit, Text } from "react-native-paper";
+import { Card, Title as Tit, Text } from "react-native-paper";
 import { useSelector } from 'react-redux';
 import { ApiRoutes } from "../../consumers/api-routes";
 import { HttpGet } from "../../consumers/http";
@@ -21,7 +21,8 @@ import MeetingStatus, {
 const { Title, Content } = Card;
 
 const MeetingAttendance = (prop: any) => {
-  const loggedInUser = useSelector(state => state.user.loggedInUser);
+  const loggedInUser = useSelector((state) => state.user.loggedInUser);
+  
   const {
     Id,
     MeetingName,
@@ -107,6 +108,8 @@ const MeetingAttendance = (prop: any) => {
     }
     return "";
   }
+
+  if (!loggedInUser) return <View></View>;
 
   return (
     <View style={styles.container}>

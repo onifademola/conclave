@@ -8,7 +8,7 @@ export const ApiRoutes = {
   deleteMeeting: "meeting/delete", // "/id"
   checkIn: "attendance/new", //meetingId + Body
   getMeetingAttendance: "meeting/attendance", // {siteId}"
-  getMyAttendances: "meeting/attendance/me", // {userId}
+  getMyAttendances: "meeting/attendance/me", // {email}
   getDepartments: "getdepartments",
   getMeetings: "meeting/all/",
   imageUriPrefix: "https://abimealy.azurewebsites.net/aworan",

@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import AuthNavigator from "./src/navigation/AuthNavigator";
 import AppNavigator from "./src/navigation/AppNavigator";
 import SplashNavigator from "./src/navigation/SplashNavigator";
-import { fetchLoggedInUser } from "./src/consumers/storage";
+import { fetchLoggedInUser, clearLoggedInUser } from "./src/consumers/storage";
 import {
   useFonts,
   RobotoCondensed_300Light,
@@ -14,7 +14,8 @@ import {
   RobotoCondensed_700Bold_Italic,
 } from "@expo-google-fonts/roboto-condensed";
 import { useSelector, useDispatch } from "react-redux";
-import { saveLoginData, reset } from "./src/redux/user/userSlice";
+import { saveLoginData } from "./src/redux/user/userSlice";
+import { isMeetingValidForAttendance } from "./src/consumers/DateHelper";
 
 const Main = () => {
   const loggedInUser = useSelector((state) => state.user.loggedInUser);
@@ -33,9 +34,16 @@ const Main = () => {
   const startUp = async () => {
     const user = await fetchLoggedInUser();
     if (user) {
-      dispatch(saveLoginData(user));
-      setLoggedIn(true);
-      setIsLoading(false);
+      const isTokenDateValid = isMeetingValidForAttendance(user.ValidTo, new Date());
+      if (isTokenDateValid) {
+        dispatch(saveLoginData(user));
+        setLoggedIn(true);
+        setIsLoading(false);
+      } else {
+        clearLoggedInUser();
+        setLoggedIn(false);
+        setIsLoading(false);
+      }
     } else {
       setLoggedIn(false);
       setIsLoading(false);
@@ -47,8 +55,17 @@ const Main = () => {
       startUp();
     }
     if (loggedInUser != null) {
-      setLoggedIn(true);
-      return;
+      const isTokenDateValid = isMeetingValidForAttendance(
+        loggedInUser.ValidTo,
+        new Date()
+      );
+      if (isTokenDateValid) {
+        setLoggedIn(true);
+        return;
+      } else {
+        clearLoggedInUser();
+        return;
+      }      
     }
   }, [loggedInUser]);
 

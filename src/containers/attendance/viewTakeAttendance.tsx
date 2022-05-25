@@ -8,7 +8,7 @@ import BusyComponent from '../../common/BusyComponent';
 import ModalAlertComponent, { ModalType } from '../../common/ModalAlertComponent';
 import { ApiRoutes } from '../../consumers/api-routes';
 import { HttpPost } from '../../consumers/http';
-import { isMeetingValidForAttendance, calculatePunctuality } from '../../consumers/DateFormatter';
+import { isMeetingValidForAttendance, calculatePunctuality } from '../../consumers/DateHelper';
 
 interface Attendance {
   email: string;

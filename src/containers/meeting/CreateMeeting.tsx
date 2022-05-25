@@ -7,18 +7,18 @@ import { useNavigation } from "@react-navigation/native";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useSelector } from "react-redux";
+import Toast from "react-native-simple-toast";
 import { ApiRoutes } from "../../consumers/api-routes";
 import { HttpGet, HttpPost } from "../../consumers/http";
 import {
   convertedDateCombinationToISO,
   convertToHourMinute,
-} from "../../consumers/DateFormatter";
+} from "../../consumers/DateHelper";
 import { AppButton } from "../../common/AppButton";
 import AppTextInput from "../../common/AppTextInput";
 import { SEC_COLOR } from "../../styles/colors";
 import CommonStyles from "../../styles/common";
 import BusyComponent from "../../common/BusyComponent";
-import ModalAlertComponent from "../../common/ModalAlertComponent";
 
 const iconSize = 40;
 const iconColor = "black";
@@ -36,8 +36,7 @@ const CreateMeeting = () => {
   const [value, setValue] = useState(null);
   const [departmentId, setDepartmentId] = useState(0);
   const [departments, setDepartments] = useState([]);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [createFailed, setCreateFailed] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -68,30 +67,29 @@ const CreateMeeting = () => {
     setIsLoading(true);
     await HttpPost(loggedInUser.Token, ApiRoutes.createMeeting, meeting)
       .then((res) => {
-        setIsLoading(false);
-        navigation.goBack();
+        if (res && res.status === 200) {
+          setIsLoading(false);
+          Toast.showWithGravity("Meeting created.", Toast.LONG, Toast.TOP);
+          navigation.goBack();
+        } else {
+          setIsLoading(false);
+          setCreateFailed(true);
+          Toast.showWithGravity(
+            "Meeting not created. Please try again.",
+            Toast.LONG,
+            Toast.TOP
+          );
+        }
       })
-      .catch(() => setIsLoading(false));
+      .catch(() => {
+        setIsLoading(false);
+        setCreateFailed(true);
+        Toast.showWithGravity("An error occured.", Toast.LONG, Toast.TOP);
+      });
   };
 
   const changeClockMode = () => {
     setShowMode(!showMode);
-  };
-
-  const showModalSuccess = () => {
-    setShowSuccessModal(true);
-    setTimeout(() => {
-      setShowSuccessModal(false);
-    }, 2000);
-    return true;
-  };
-
-  const showModalError = () => {
-    setShowErrorModal(true);
-    setTimeout(() => {
-      setShowErrorModal(false);
-    }, 2000);
-    return true;
   };
 
   const convertedStartDate = () =>
@@ -180,12 +178,23 @@ const CreateMeeting = () => {
     >
       {({ handleChange, handleBlur, handleSubmit, values }) => (
         <View style={styles.container}>
+          <Text
+            style={{
+              textAlign: "center",
+              color: "red",
+              fontSize: 18,
+              fontFamily: "RobotoCondensed_400Regular",
+            }}
+          >
+            {createFailed ? "MEETING NOT CREATED! PLEASE TRY AGAIN." : ""}
+          </Text>
           <AppTextInput
             onChangeText={handleChange("meetingName")}
             onBlur={handleBlur("meetingName")}
             value={values.meetingName}
             placeholder="Meeting"
             label="Meeting"
+            onPressIn={() => setCreateFailed(false)}
           />
           <AppTextInput
             onChangeText={handleChange("detail")}
@@ -194,6 +203,7 @@ const CreateMeeting = () => {
             placeholder="Description"
             label="Description"
             multiline
+            onPressIn={() => setCreateFailed(false)}
           />
           <View style={styles.linerRowContainer}>
             <View style={styles.linerRowSubContainer}>

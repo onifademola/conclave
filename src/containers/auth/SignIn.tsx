@@ -25,10 +25,10 @@ const SignIn = () => {
     await HttpPost("tt", ApiRoutes.login, values)
       .then(async (res) => {
         if (res && res.status === 200) {
-          dispatch(saveLoginData(res.data));
-          await saveLoggedInUser(res.data);
           setLogInFailed(false);
           setIsLoading(false);
+          dispatch(saveLoginData(res.data));
+          await saveLoggedInUser(res.data);
         } else {
           setLogInFailed(true);
           setIsLoading(false);

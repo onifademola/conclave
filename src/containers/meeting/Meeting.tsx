@@ -30,7 +30,8 @@ const renderAddIcon = () => {
 };
 
 const Meeting = () => {
-  const loggedInUser = useSelector(state => state.user.loggedInUser);
+  const loggedInUser = useSelector((state) => state.user.loggedInUser);
+  
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [meetings, setMeetings] = useState([]);
@@ -104,6 +105,8 @@ const Meeting = () => {
   const renderItem = ({ item }) => {
     return <ItemComponent meeting={item} UpdateMeeting={UpdateMeeting} DeleteMeeting={DeleteMeeting} />;
   };
+
+  if (!loggedInUser) return <View></View>;
 
   if (isLoading) return <BusyComponent />;
 
