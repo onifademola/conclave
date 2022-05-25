@@ -53,12 +53,10 @@ const Meeting = () => {
 
   const UpdateMeeting = async (meeting) => {
     setIsLoading(true);
-    console.log(meeting)
     const { Id } = meeting;
     const url = `${ApiRoutes.updateMeeting}/${Id}`;
     await HttpPost(loggedInUser.Token, url, meeting)
       .then(async (res) => {
-        console.log(res);
         if (res && res.status === 200) {
           await fetchMeetings()
             .then(() => setIsLoading(false))

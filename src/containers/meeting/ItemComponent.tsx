@@ -144,6 +144,7 @@ const ItemComponent = (prop) => {
                 icon="delete-clock"
                 size={iconSize}
                 onPress={() => deleteAlert()}
+                disabled={Done || Cancelled}
               />
               <Animatable.View
                 animation={animation}

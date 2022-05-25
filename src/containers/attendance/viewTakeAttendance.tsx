@@ -84,6 +84,7 @@ const TakeAttendanceView = (prop: any) => {
       arrivalTime: arrivalDateTime.toISOString(),
       status: getLateness
     };
+    
     await HttpPost(loggedInUser.Token, ApiRoutes.createAttendance, attendance)
       .then((res) => {
         setIsLoading(false);
