@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   },
   nameTxt: {
     marginLeft: 15,
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: "RobotoCondensed_400Regular",
     color: "white",
   },
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   msgTxt: {
-    fontSize: 15,
+    fontSize: 18,
     marginLeft: 15,
     fontFamily: "RobotoCondensed_400Regular",
     color: "black",

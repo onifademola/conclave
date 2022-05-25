@@ -11,13 +11,13 @@ const Attendances = () => {
   const appUser = useSelector(state => state.user.loggedInUser);
   const [loggedInUser, setLoggedInUser] = useState(appUser);
   const [attendanceList, setAttendanceList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   const { Username } = loggedInUser;
 
   const fetchAttendanceList = async () => {
     setIsLoading(true);
-    const url = `${ApiRoutes.getMyAttendances}/${Username || ""}`;
+    const url = `${ApiRoutes.getMyAttendances}/${Username}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {
         setAttendanceList(res.data);

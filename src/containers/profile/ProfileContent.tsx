@@ -73,14 +73,15 @@ const renderDetail = ({ DepartmentName, Username, SiteName }) => {
 };
 
 const ProfileContent = ({ user }) => {
-  if (!user) return null;
   const { FirstName, LastName, Username, ImagePath } = user;
   const imageUri = `${ApiRoutes.imageUriPrefix}/${ImagePath}`;
-  const [imageIsValid, setImageIsValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [imageIsValid, setImageIsValid] = useState(true);
 
   useEffect(() => {
     fetch(imageUri).then((res) => {
       setImageIsValid(res.status === 200);
+      setIsLoading(false);
     });
   }, []);
 
@@ -91,13 +92,22 @@ const ProfileContent = ({ user }) => {
       return Username;
     }
   };
+
+  if (isLoading) return <View></View>;
+
   return (
     <View style={styles.container}>
-      <View style={styles.subContainer}>
-        {imageIsValid ? renderAvatar(imageUri) : renderAvatarText(user)}
-        {renderDetail(user)}
-      </View>
-      <Headline style={styles.profileName}>{getName()}</Headline>
+      {isLoading ? (
+        <></>
+      ) : (
+        <>
+          <View style={styles.subContainer}>
+            {imageIsValid ? renderAvatar(imageUri) : renderAvatarText(user)}
+            {renderDetail(user)}
+          </View>
+          <Headline style={styles.profileName}>{getName()}</Headline>
+        </>
+      )}
     </View>
   );
 };
@@ -106,12 +116,10 @@ const radiusRate = 90;
 
 const styles = StyleSheet.create({
   container: {
-    //flex: 0.5,
     borderTopLeftRadius: radiusRate,
     borderTopRightRadius: radiusRate,
     backgroundColor: ACCENT,
     justifyContent: "flex-start",
-    //paddingBottom: DEVICE_HEIGHT * 0.05,
     paddingRight: 15,
     paddingLeft: 15,
   },

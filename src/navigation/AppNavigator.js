@@ -10,14 +10,14 @@ import { clearLoggedInUser } from "../consumers/storage";
 import { PRY_COLOR, SEC_COLOR, WHITE, ACCENT } from "../styles/colors";
 import abi from "../../assets/abi.jpg";
 
-const Tab = createBottomTabNavigator();
-
 import MeetingContainer from "../containers/meeting/index";
 import ProfileContainer from "../containers/profile/index";
 import MyAttendancesContainer from "../containers/myAttendances/index";
 import CreateMeeting from "../containers/meeting/CreateMeeting";
 import TakeAttendanceView from "../containers/attendance/viewTakeAttendance";
 import MeetingAttendance from "../containers/meeting/MeetingAttendance";
+
+const Tab = createBottomTabNavigator();
 
 const commonHeaderStyle = {
   backgroundColor: ACCENT,

@@ -41,7 +41,7 @@ const Meeting = () => {
   }, []);
 
   const fetchMeetings = async () => {
-    const url = `${ApiRoutes.getMeetings}/${loggedInUser.SiteId || ""}`;
+    const url = `${ApiRoutes.getMeetings}/${loggedInUser.SiteId}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {        
         setMeetings(res.data);

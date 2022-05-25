@@ -46,7 +46,7 @@ const MeetingAttendance = (prop: any) => {
 
   const fetchAttendanceList = async () => {
     setIsLoading(true);
-    const url = `${ApiRoutes.getMeetingAttendance}/${Id || ""}`;
+    const url = `${ApiRoutes.getMeetingAttendance}/${Id}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {
         setAttendanceList(res.data);

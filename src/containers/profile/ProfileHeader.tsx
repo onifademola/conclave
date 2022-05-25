@@ -12,7 +12,6 @@ const ProfileHeader = ({ user }) => {
     <View style={styles.container}>
       <View style={styles.qrContainer}>
         <QRCode
-          // content={userData != null ? userData.Username : "NA"}
           content={Username}
           color="black"
           size={DEVICE_HEIGHT * 0.45}
@@ -25,7 +24,7 @@ const ProfileHeader = ({ user }) => {
 const styles = StyleSheet.create({
   container: {
     height: DEVICE_HEIGHT * 0.38,
-    justifyContent: "flex-end",
+    justifyContent: "flex-start",
     padding: 15,
   },
   qrContainer: {

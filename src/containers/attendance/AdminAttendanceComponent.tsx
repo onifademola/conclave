@@ -8,7 +8,6 @@ import {
 } from "../../styles/colors";
 import { ExtractInitials } from '../../consumers/Utils';
 import { ApiRoutes } from '../../consumers/api-routes';
-import { isUrlImageValid } from '../../consumers/Utils';
 
 const avatarSize = 50;
 const renderAvatarText = (Email: string) => (
