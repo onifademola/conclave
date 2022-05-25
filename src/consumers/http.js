@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const devUrl = "https://localhost:44315/api/v1";
-const prodUrl = "https://abimealy.azurewebsites.net/api/v1";
+export const prodUrl = "https://abimealy.azurewebsites.net/api/v1";
 
 const baseUri = prodUrl;
 

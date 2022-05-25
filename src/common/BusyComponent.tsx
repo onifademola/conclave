@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { IconButton, Title } from "react-native-paper";
 import { ActivityIndicator } from 'react-native-paper';
 import { fontSize } from '../styles/fonts';
+import * as Animatable from "react-native-animatable";
 
 const activities = [
   "...we are sorting that, please wait.",
@@ -14,7 +14,7 @@ const activities = [
 
 const baseColor = "black";
 
-const getIndex = () => Math.floor(Math.random() * activities.length);
+const getIndex = () => Math.floor(Math.random() * activities.length-1);
 
 const BusyComponent = () => {
   const [indexState, setIndexState] = useState(0);
@@ -35,7 +35,14 @@ const BusyComponent = () => {
       <View style={styles.icon}>
         <ActivityIndicator animating={true} size="large" color={baseColor} />
       </View>
-      <Title style={styles.title}>{activities[indexState]}</Title>
+      <Animatable.Text
+        animation="swing"
+        easing="ease-out"
+        iterationCount="infinite"
+        style={styles.title}
+      >
+        {activities[indexState]}
+      </Animatable.Text>
     </View>
   );
 };

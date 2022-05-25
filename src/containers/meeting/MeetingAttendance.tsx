@@ -99,6 +99,15 @@ const MeetingAttendance = (prop: any) => {
     }
   };
 
+  const getAttendeesCount = () => {
+    if (attendanceList && attendanceList.length) {
+      return attendanceList.length > 1
+        ? `${attendanceList.length} Attendees`
+        : `${attendanceList.length} Attendee`;
+    }
+    return "";
+  }
+
   return (
     <View style={styles.container}>
       <View>
@@ -109,31 +118,47 @@ const MeetingAttendance = (prop: any) => {
             subtitleStyle={styles.content}
             subtitle={`${moment(StartDate).format(
               "dddd, MMMM Do YYYY"
-            )} || ${moment(StartDate).format("LT")} - ${moment(
-              EndDate
-            ).format("LT")}`}
+            )} || ${moment(StartDate).format("LT")} - ${moment(EndDate).format(
+              "LT"
+            )}`}
           />
           <Content>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+              }}
+            >
               <Tit style={styles.content}>{Department}</Tit>
               {getMeetingStatus()}
               {/* <Text>Search</Text> */}
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+              }}
+            >
+              <Tit style={styles.content}>Late after {LateAfter} mins</Tit>
+              <Tit style={styles.content}>{getAttendeesCount()}</Tit>              
             </View>
           </Content>
         </Card>
       </View>
       <SafeAreaView style={{ flex: 1 }}>
-        { isLoading ? <BusyComponent />  : 
-          (attendanceList && attendanceList.length ? (
-            <FlatList
-              data={attendanceList}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.Id}
-            />
-          ) : (
-            <EmptyList />
-          ))
-        }
+        {isLoading ? (
+          <BusyComponent />
+        ) : attendanceList && attendanceList.length ? (
+          <FlatList
+            data={attendanceList}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.Id}
+          />
+        ) : (
+          <EmptyList />
+        )}
       </SafeAreaView>
     </View>
   );

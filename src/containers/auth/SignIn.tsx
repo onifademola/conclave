@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { View, StyleSheet, Text } from "react-native";
 import { Formik } from "formik";
 import { useDispatch } from "react-redux";
-import { useNavigation } from "@react-navigation/native";
-import { saveLoginData, reset } from "../../redux/user/userSlice";
+import { saveLoginData } from "../../redux/user/userSlice";
 import { AppButton } from "../../common/AppButton";
 import AppTextInput from "../../common/AppTextInput";
 import BusyComponent from "../../common/BusyComponent";
@@ -18,18 +17,25 @@ interface Login {
 
 const SignIn = () => {
   const dispatch = useDispatch();
-  const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
+  const [logInFailed, setLogInFailed] = useState(false);
 
   const login = async (values: Login) => {
     setIsLoading(true);
     await HttpPost("tt", ApiRoutes.login, values)
       .then(async (res) => {
-        dispatch(saveLoginData(res.data));
-        await saveLoggedInUser(res.data);
-        setIsLoading(false);
+        if (res && res.status === 200) {
+          dispatch(saveLoginData(res.data));
+          await saveLoggedInUser(res.data);
+          setLogInFailed(false);
+          setIsLoading(false);
+        } else {
+          setLogInFailed(true);
+          setIsLoading(false);
+        }
       })
       .catch((error) => {
+        setLogInFailed(true);
         setIsLoading(false);
       });
   };
@@ -48,9 +54,10 @@ const SignIn = () => {
         login(values);
       }}
     >
-      {({ handleChange, handleBlur, handleSubmit, values, resetForm }) => (
+      {({ handleChange, handleBlur, handleSubmit, values }) => (
         <View style={styles.container}>
           <AppTextInput
+            onPressIn={() => setLogInFailed(false)}
             onChangeText={handleChange("email")}
             onBlur={handleBlur("email")}
             value={values.email}
@@ -59,6 +66,7 @@ const SignIn = () => {
             style={{ marginBottom: 10 }}
           />
           <AppTextInput
+            onPressIn={() => setLogInFailed(false)}
             onChangeText={handleChange("password")}
             onBlur={handleBlur("password")}
             value={values.password}
@@ -66,6 +74,17 @@ const SignIn = () => {
             label="Password"
             secureTextEntry
           />
+
+          <Text
+            style={{
+              textAlign: "center",
+              color: "red",
+              fontSize: 18,
+              fontFamily: "RobotoCondensed_400Regular",
+            }}
+          >
+            {logInFailed ? "LOGIN FAILED! PLEASE TRY AGAIN." : ""}
+          </Text>
 
           <View style={styles.btnContainer}>
             <AppButton
@@ -104,6 +123,6 @@ const styles = StyleSheet.create({
     alignContent: "space-around",
   },
   btnContainer: {
-    paddingTop: 60,
+    paddingTop: 30,
   },
 });

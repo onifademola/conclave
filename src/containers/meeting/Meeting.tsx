@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import ItemComponent from './ItemComponent';
 import EmptyList from '../../common/EmptyList';
 import { ApiRoutes } from "../../consumers/api-routes";
-import { HttpGet } from "../../consumers/http";
+import { HttpGet, HttpDelete, HttpPost } from "../../consumers/http";
 import BusyComponent from '../../common/BusyComponent';
 
 const renderAddIcon = () => {
@@ -50,6 +50,45 @@ const Meeting = () => {
         setIsLoading(false);
       });
   };
+
+  const UpdateMeeting = async (meeting) => {
+    setIsLoading(true);
+    console.log(meeting)
+    const { Id } = meeting;
+    const url = `${ApiRoutes.updateMeeting}/${Id}`;
+    await HttpPost(loggedInUser.Token, url, meeting)
+      .then(async (res) => {
+        console.log(res);
+        if (res && res.status === 200) {
+          await fetchMeetings()
+            .then(() => setIsLoading(false))
+            .catch(() => setIsLoading(false));
+        } else {
+          setIsLoading(false);
+        }
+      })
+      .catch((err) => {
+        setIsLoading(false);
+      });
+  };
+
+  const DeleteMeeting = async (meetingId) => {
+    setIsLoading(true);
+    const url = `${ApiRoutes.deleteMeeting}/${meetingId}`;
+    await HttpDelete(loggedInUser.Token, url)
+      .then(async (res) => {
+        if (res && res.status === 200) {
+          await fetchMeetings()
+            .then(() => setIsLoading(false))
+            .catch(() => setIsLoading(false));
+        } else {
+          setIsLoading(false);
+        }
+      })
+      .catch((err) => {
+        setIsLoading(false);
+      });
+  };
   
   const onRefresh = async () => {
     setRefreshing(true);
@@ -65,7 +104,7 @@ const Meeting = () => {
   };
   
   const renderItem = ({ item }) => {
-    return <ItemComponent meeting={item} />;
+    return <ItemComponent meeting={item} UpdateMeeting={UpdateMeeting} DeleteMeeting={DeleteMeeting} />;
   };
 
   if (isLoading) return <BusyComponent />;
