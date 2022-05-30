@@ -42,7 +42,7 @@ const MeetingsStackScreen = () => {
       <MeetingsStack.Screen
         name="Meeting"
         component={MeetingContainer}
-        options={{ title: "MEETINGS" }}
+        options={{ title: "MEETINGS", headerShown: false }}
       />
       <MeetingsStack.Screen
         name="CreateMeeting"
@@ -206,6 +206,7 @@ const AppNavigator = ({ isUserAdmin }) => {
             name="Meetings"
             component={MeetingsStackScreen}
             options={{
+              // headerShown: false,
               headerTitle: (props) => <LogoTitle {...props} />,
             }}
           />

@@ -10,6 +10,8 @@ export const ApiRoutes = {
   getMeetingAttendance: "meeting/attendance", // {siteId}"
   getMyAttendances: "meeting/attendance/me", // {email}
   getDepartments: "getdepartments",
-  getMeetings: "meeting/all/",
+  getMeetings: "meeting/all/", // {siteId}"
+  getFutureMeetings: "meeting/future/", // {siteId}"
+  getPastMeetings: "meeting/past/", // {siteId}"
   imageUriPrefix: "https://abimealy.azurewebsites.net/aworan",
 };

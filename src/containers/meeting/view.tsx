@@ -1,18 +1,36 @@
 import * as React from "react";
-import { LinearGradient } from "expo-linear-gradient";
-import Meeting from "./Meeting";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import FutureMeetingsContainer from "./FutureMeetingsContainer";
+import PastMeetingsContainer from "./PastMeetingsContainer";
+import {
+  PRY_COLOR,
+  SEC_COLOR,
+  SEC_TEXT_COLOR,
+} from "../../styles/colors";
 
-import commonStyles from "../../styles/common";
-import { LINEAR_GRADIENT_COLORS } from "../../styles/colors";
+const Tab = createMaterialTopTabNavigator();
 
 const MeetingView = () => {
   return (
-    <LinearGradient
-      colors={LINEAR_GRADIENT_COLORS}
-      style={commonStyles.viewContainer}
+    <Tab.Navigator
+      screenOptions={{
+        tabBarLabelStyle: { fontSize: 18 },
+        tabBarStyle: { backgroundColor: SEC_TEXT_COLOR },
+        tabBarInactiveTintColor: PRY_COLOR,
+        tabBarActiveTintColor: SEC_COLOR,
+      }}
     >
-      <Meeting />
-    </LinearGradient>
+      <Tab.Screen
+        name="FutureMeetings"
+        component={FutureMeetingsContainer}
+        options={{ title: "Future Meetings" }}
+      />
+      <Tab.Screen
+        name="CompletedMeetings"
+        component={PastMeetingsContainer}
+        options={{ title: "Completed/Cancelled" }}
+      />
+    </Tab.Navigator>
   );
 };
 

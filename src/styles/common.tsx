@@ -5,7 +5,7 @@ const CommonStyles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     justifyContent: "flex-end",
-    paddingTop: 30,
+    paddingTop: 5,
     fontFamily: "RobotoCondensed_400Regular",
   },
   textInput: {

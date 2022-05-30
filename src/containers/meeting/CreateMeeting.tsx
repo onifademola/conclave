@@ -173,7 +173,7 @@ const CreateMeeting: React.FC = () => {
         selectedDays.push(day);
       }
     });
-    console.log(selectedDays);
+    
     if (!selectedDays) return;
     
     let recurringResult: any[] = [];
@@ -182,7 +182,7 @@ const CreateMeeting: React.FC = () => {
       for (let i = 0; i < recurringFor; i++) {
         const currentDate = moment(meetingDate).add(i, "day");
         const currentDateWeekDay = moment(currentDate).format("ddd");
-        console.log(currentDateWeekDay);
+        
         if (currentDateWeekDay === day) {
           const currentStartDate = convertedDateCombinationToISO(
             currentDate,
@@ -459,16 +459,20 @@ const CreateMeeting: React.FC = () => {
             default:
               break;
           }
+          const sortedRecurDates = recurDates.sort((a: any, b: any) => {
+            return a.startDate < b.startDate
+              ? -1
+              : a.startDate > b.startDate
+              ? 1
+              : 0;
+          });
           const finalValues = {
             ...values,
             startDate,
             endDate,
             departmentId,
-            recurringDates: recurDates.sort(
-              (a: any, b: any) => b.startDate - a.startDate
-            ),
+            recurringDates: sortedRecurDates,
           };
-          // console.log(finalValues);
           await saveMeeting(finalValues);
         }}
       >

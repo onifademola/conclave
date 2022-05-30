@@ -14,7 +14,6 @@ import EmptyList from '../../common/EmptyList';
 import { ApiRoutes } from "../../consumers/api-routes";
 import { HttpGet, HttpDelete, HttpPost } from "../../consumers/http";
 import BusyComponent from '../../common/BusyComponent';
-import moment from 'moment';
 
 const renderAddIcon = () => {
   const navigation = useNavigation();
@@ -30,7 +29,7 @@ const renderAddIcon = () => {
   );
 };
 
-const Meeting = () => {
+const PastMeetings = () => {
   const appUser = useSelector((state) => state.user.loggedInUser);
   const [loggedInUser, setLoggedInUser] = useState(appUser);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,7 +41,7 @@ const Meeting = () => {
   }, []);
 
   const fetchMeetings = async () => {
-    const url = `${ApiRoutes.getMeetings}/${loggedInUser.SiteId}`;
+    const url = `${ApiRoutes.getPastMeetings}/${loggedInUser.SiteId}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {
         const sortedMeetings = res.data.sort((a: any, b: any) => {
@@ -96,10 +95,10 @@ const Meeting = () => {
         setIsLoading(false);
       });
   };
-  
+
   const onRefresh = async () => {
     setRefreshing(true);
-    const url = `${ApiRoutes.getMeetings}/${loggedInUser.SiteId}`;
+    const url = `${ApiRoutes.getPastMeetings}/${loggedInUser.SiteId}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {
         const sortedMeetings = res.data.sort((a: any, b: any) => {
@@ -116,21 +115,28 @@ const Meeting = () => {
         setRefreshing(false);
       });
   };
-  
+
   const renderItem = ({ item }) => {
-    return <ItemComponent meeting={item} UpdateMeeting={UpdateMeeting} DeleteMeeting={DeleteMeeting} />;
+    return (
+      <ItemComponent
+        meeting={item}
+        UpdateMeeting={UpdateMeeting}
+        DeleteMeeting={DeleteMeeting}
+      />
+    );
   };
 
   if (isLoading) return <BusyComponent />;
 
-  if (!meetings) return (
-    <View style={styles.container}>
-      <EmptyList />
-    </View>
-  );
+  if (!meetings)
+    return (
+      <View style={styles.container}>
+        <EmptyList />
+      </View>
+    );
 
   return (
-    <SafeAreaView style={{ flex: 1, justifyContent: "flex-start", }}>
+    <SafeAreaView style={{ flex: 1, justifyContent: "flex-start" }}>
       <FlatList
         data={meetings}
         renderItem={renderItem}
@@ -139,10 +145,9 @@ const Meeting = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
-      {renderAddIcon()}
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -159,4 +164,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Meeting
+export default PastMeetings;

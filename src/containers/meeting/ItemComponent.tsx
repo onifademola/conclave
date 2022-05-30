@@ -6,17 +6,20 @@ import moment from "moment";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import * as Animatable from "react-native-animatable";
+import Toast from "react-native-simple-toast";
 import { ACCENT, SEC_TEXT_COLOR } from "../../styles/colors";
 import MeetingStatus, {
   MeetingStatusProp,
   MeetingStatusType,
 } from "../../common/MeetingStatus";
 import { prodUrl } from "../../consumers/http";
+import TinyBusyComponent from "../../common/TinyBusyComponent";
 
 const { Title, Content } = Card;
 
 const ItemComponent = (prop) => {
   const { UpdateMeeting, DeleteMeeting, meeting } = prop;
+
   if (!meeting) return null;
   const navigation = useNavigation();
   const {
@@ -35,7 +38,8 @@ const ItemComponent = (prop) => {
   } = meeting;
 
   const [animation, setAnimation] = useState("");
-
+  const [isPageLoading, setIsPageLoading] = useState(false);
+ 
   const iconSize = 30;
 
   const deleteAlert = () =>
@@ -45,11 +49,12 @@ const ItemComponent = (prop) => {
       [
         {
           text: "Go back",
-          onPress: () => console.log("Ask me later pressed"),
+          onPress: () => console.log("All operations cancelled."),
         },
         {
           text: "CANCEL",
           onPress: async () => {
+            setIsPageLoading(true);
             const cancellingMeeting = {
               Cancelled: true,
               Id: Id,
@@ -63,12 +68,41 @@ const ItemComponent = (prop) => {
               Done: Done,
               LateAfter: LateAfter,
             };
-            await UpdateMeeting(cancellingMeeting);
+            await UpdateMeeting(cancellingMeeting)
+              .then((res) => {
+                setIsPageLoading(false);
+                Toast.showWithGravity(
+                  "Meeting cancelled.",
+                  Toast.LONG,
+                  Toast.TOP
+                );
+              })
+              .catch(() => {
+                setIsPageLoading(false);
+                Toast.showWithGravity(
+                  "Meeting cancelled.",
+                  Toast.LONG,
+                  Toast.TOP
+                );
+              });
           },
           style: "cancel",
         },
         { text: "DELETE", onPress: async () => {
-          await DeleteMeeting(Id);
+          setIsPageLoading(true);
+          await DeleteMeeting(Id)
+            .then((res) => {
+              setIsPageLoading(false);
+              Toast.showWithGravity(
+                "Meeting deleted.",
+                Toast.LONG,
+                Toast.TOP
+              );
+            })
+            .catch(() => {
+              setIsPageLoading(false);
+              Toast.showWithGravity("Meeting deleted.", Toast.LONG, Toast.TOP);
+            });
         }},
       ]
     );
@@ -114,6 +148,7 @@ const ItemComponent = (prop) => {
           console.log("raise a modal to mark done or cancelled");
         },
       };
+
       return <MeetingStatus meetingStatus={meeting} />;
     }
   };
@@ -175,15 +210,21 @@ const ItemComponent = (prop) => {
           )}
         />
         <Content>
-          <View>
-            <Tit style={{ ...styles.content, fontSize: 28 }}>{MeetingName}</Tit>
-            <Tit
-              style={{ ...styles.content, fontSize: 15, fontWeight: "800" }}
-            >{`${moment(StartDate).format("dddd, MMMM DD, YYYY")} || ${moment(
-              StartDate
-            ).format("LT")} - ${moment(EndDate).format("LT")}`}</Tit>
-            <Paragraph style={styles.content}>{Detail}</Paragraph>
-          </View>
+          {isPageLoading ? (
+            <TinyBusyComponent />
+          ) : (
+            <View>
+              <Tit style={{ ...styles.content, fontSize: 28 }}>
+                {MeetingName}
+              </Tit>
+              <Tit
+                style={{ ...styles.content, fontSize: 15, fontWeight: "800" }}
+              >{`${moment(StartDate).format("dddd, MMMM DD, YYYY")} || ${moment(
+                StartDate
+              ).format("LT")} - ${moment(EndDate).format("LT")}`}</Tit>
+              <Paragraph style={styles.content}>{Detail}</Paragraph>
+            </View>
+          )}
         </Content>
       </Card>
     </View>
