@@ -14,6 +14,7 @@ import EmptyList from '../../common/EmptyList';
 import { ApiRoutes } from "../../consumers/api-routes";
 import { HttpGet, HttpDelete, HttpPost } from "../../consumers/http";
 import BusyComponent from '../../common/BusyComponent';
+import moment from 'moment';
 
 const renderAddIcon = () => {
   const navigation = useNavigation();
@@ -43,8 +44,15 @@ const Meeting = () => {
   const fetchMeetings = async () => {
     const url = `${ApiRoutes.getMeetings}/${loggedInUser.SiteId}`;
     await HttpGet(loggedInUser.Token, url)
-      .then((res) => {        
-        setMeetings(res.data);
+      .then((res) => {
+        const sortedMeetings = res.data.sort((a: any, b: any) => {
+          return b.StartDate < a.StartDate
+            ? -1
+            : b.StartDate > a.StartDate
+            ? 1
+            : 0;
+        });
+        setMeetings(sortedMeetings);
         setIsLoading(false);
       })
       .catch((err) => {
@@ -93,8 +101,15 @@ const Meeting = () => {
     setRefreshing(true);
     const url = `${ApiRoutes.getMeetings}/${loggedInUser.SiteId}`;
     await HttpGet(loggedInUser.Token, url)
-      .then((res) => {        
-        setMeetings(res.data);
+      .then((res) => {
+        const sortedMeetings = res.data.sort((a: any, b: any) => {
+          return b.StartDate < a.StartDate
+            ? -1
+            : b.StartDate > a.StartDate
+            ? 1
+            : 0;
+        });
+        setMeetings(sortedMeetings);
         setRefreshing(false);
       })
       .catch((err) => {

@@ -19,8 +19,6 @@ import { HttpGet, HttpPost } from "../../consumers/http";
 import {
   convertedDateCombinationToISO,
   convertToHourMinute,
-  getRecurringDatesForEveryDay,
-  getRecurringDatesForWeekDays,
 } from "../../consumers/DateHelper";
 import { AppButton } from "../../common/AppButton";
 import AppTextInput from "../../common/AppTextInput";
@@ -66,8 +64,7 @@ const CreateMeeting: React.FC = () => {
   const [recurringType, setRecurringType] = useState(OccurrenceType.EVERYDAY);
   const [recurringFor, setRecurringFor] = useState(30);
   const [selectedWeekDays, setSelectedWeekDays] = useState(SelectedDays);
-  const [recurringDates, setRecurringDates] = useState([]);
-
+  
   useEffect(() => {
     let mounted = true;
 
@@ -137,7 +134,6 @@ const CreateMeeting: React.FC = () => {
         endDate: currentEndDate,
       });
     }
-    // setRecurringDates(recurringResult);
     return recurringResult;
   };
 
@@ -165,7 +161,6 @@ const CreateMeeting: React.FC = () => {
         });
       }
     }
-    // setRecurringDates(recurringResult);
     return recurringResult;
   };
 
@@ -201,14 +196,11 @@ const CreateMeeting: React.FC = () => {
             startDate: currentStartDate,
             endDate: currentEndDate,
           });
-          // console.log("REC: ", localrecurringDates);
         }
       }
       const prevReults = [...recurringResult];
       recurringResult = [...prevReults, ...localrecurringDates];      
     });
-    // console.log("TOT: ", recurringResult);
-    // setRecurringDates(recurringResult);
     return recurringResult;
   };
 
@@ -221,7 +213,6 @@ const CreateMeeting: React.FC = () => {
     setRecurringType(OccurrenceType.EVERYDAY);
     setRecurringFor(30);
     setSelectedWeekDays(SelectedDays);
-    setRecurringDates([]);
   }
 
   const startDateAndroidPickerShowMode = (mode) => {
@@ -473,14 +464,12 @@ const CreateMeeting: React.FC = () => {
             startDate,
             endDate,
             departmentId,
-            recurringDates: recurDates,
+            recurringDates: recurDates.sort(
+              (a: any, b: any) => b.startDate - a.startDate
+            ),
           };
-          //console.log("we passed values")
-          console.log(finalValues);
-          // await saveMeeting(finalValues);
-          setTimeout(() => {
-            resetStates();
-          }, 3000);
+          // console.log(finalValues);
+          await saveMeeting(finalValues);
         }}
       >
         {({ handleChange, handleBlur, handleSubmit, values }) => (
