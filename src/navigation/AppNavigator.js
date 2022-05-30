@@ -132,7 +132,13 @@ const LogoTitle = () => {
           Conclave
         </Text>
       </View>
-      <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "flex-start",
+          paddingRight: "40%",
+        }}
+      >
         <IconButton
           color="white"
           icon="logout"

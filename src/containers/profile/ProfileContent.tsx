@@ -120,8 +120,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: radiusRate,
     backgroundColor: ACCENT,
     justifyContent: "flex-start",
-    paddingRight: 15,
-    paddingLeft: 15,
+    paddingRight: "10%",
+    paddingLeft: "5%",
   },
   subContainer: {
     flexDirection: "row",

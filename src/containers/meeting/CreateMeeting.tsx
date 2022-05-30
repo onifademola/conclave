@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, ScrollView } from "react-native";
 import { Formik } from "formik";
-import { IconButton } from "react-native-paper";
+import { Checkbox, IconButton, RadioButton } from "react-native-paper";
 import moment from "moment";
 import { useNavigation } from "@react-navigation/native";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
@@ -24,7 +24,21 @@ const iconSize = 40;
 const iconColor = "black";
 const dateTimeBackgroundColor = SEC_COLOR;
 
-const CreateMeeting = () => {
+enum OccurrenceType {
+  EVERYDAY = "Every Day",
+  EVERYWEEKDAY = "Every Week Day",
+  SELECTEDDAYS = "Selected Days"
+};
+
+const SelectedDays = {
+  Mon: false,
+  Tue: false,
+  Wed: false,
+  Thu: false,
+  Fri: false
+}
+
+const CreateMeeting: React.FC = () => {
   const appUser = useSelector((state) => state.user.loggedInUser);
   const navigation = useNavigation();
   const [loggedInUser, setLoggedInUser] = useState(appUser);
@@ -38,6 +52,11 @@ const CreateMeeting = () => {
   const [departmentId, setDepartmentId] = useState(0);
   const [departments, setDepartments] = useState([]);
   const [createFailed, setCreateFailed] = useState(false);
+  const [recurring, setRecurring] = useState(false);
+  const [recurringType, setRecurringType] = useState(OccurrenceType.EVERYDAY);
+  const [recurringFor, setRecurringFor] = useState(30);
+  const [selectedWeekDays, setSelectedWeekDays] = useState(SelectedDays);
+  const [recurringDates, setRecurringDates] = useState([]);
 
   useEffect(() => {
     let mounted = true;
@@ -89,6 +108,74 @@ const CreateMeeting = () => {
       });
   };
 
+  const createRecurringDatesForEveryDay = () => {
+    if (recurringFor < 1) return null;
+    if (!moment(meetingDate).isValid) return null;
+    const recurringResult = [];
+    for (let i = 0; i < recurringFor; i++) {
+      const currentDate = moment(meetingDate).add(i, "day");
+      const currentStartDate = convertedDateCombinationToISO(
+        currentDate,
+        startDate
+      );
+      const currentEndDate = convertedDateCombinationToISO(
+        currentDate,
+        endDate
+      );
+      recurringResult.push({ startDate: currentStartDate, endDate: currentEndDate });
+    }
+    return recurringResult;
+  }
+
+  const createRecurringDatesForWeekDays = () => {
+    if (recurringFor < 1) return null;
+    if (!moment(meetingDate).isValid) return null;
+    const recurringResult = [];
+    for (let i = 0; i < recurringFor; i++) {
+      const currentDate = moment(meetingDate).add(i, "day");
+      const currentDateWeekDay = moment(meetingDate).format('ddd');
+      const isCurrentDateWeekDay = (currentDateWeekDay !== 'Sat') && (currentDateWeekDay !== 'Sun');
+      if (!isCurrentDateWeekDay) return;
+      const currentStartDate = convertedDateCombinationToISO(
+        currentDate,
+        startDate
+      );
+      const currentEndDate = convertedDateCombinationToISO(
+        currentDate,
+        endDate
+      );
+      recurringResult.push({
+        startDate: currentStartDate,
+        endDate: currentEndDate,
+      });
+    }
+    return recurringResult;
+  };
+
+  const createRecurringDatesForSpecificDays = (day) => {
+    if (recurringFor < 1) return null;
+    if (!moment(meetingDate).isValid) return null;
+    const recurringResult = [];
+    for (let i = 0; i < recurringFor; i++) {
+      const currentDate = moment(meetingDate).add(i, "day");
+      const currentDateWeekDay = moment(meetingDate).format("ddd");
+      if (currentDateWeekDay !== day) return;
+      const currentStartDate = convertedDateCombinationToISO(
+        currentDate,
+        startDate
+      );
+      const currentEndDate = convertedDateCombinationToISO(
+        currentDate,
+        endDate
+      );
+      recurringResult.push({
+        startDate: currentStartDate,
+        endDate: currentEndDate,
+      });
+    }
+    return recurringResult;
+  };
+
   const changeClockMode = () => {
     setShowMode(!showMode);
   };
@@ -101,11 +188,21 @@ const CreateMeeting = () => {
 
   const startDateAndroidPickerShowMode = (mode) => {
     DateTimePickerAndroid.open({
-      value: startDate,
+      value: new Date(),
+      minimumDate: new Date(),
       onChange: (event, selectedDate) => {
-        if (event.type === "dismissed") return;
-        // setMeetingDate(new Date(event.nativeEvent.timestamp));
-        setMeetingDate(selectedDate);
+        if (event.type === "dismissed") {
+          if (!moment(startDate).isValid) setStartDate(new Date());
+          return;
+        }
+        const newDate = new Date(event.nativeEvent.timestamp);
+        setMeetingDate(newDate);
+        const resultingDate = convertedDateCombinationToISO(
+          newDate,
+          startDate
+        );
+        setStartDate(resultingDate);
+        setEndDate(moment(resultingDate).add(30, "minutes"));
       },
       mode,
       is24Hour: showMode,
@@ -114,17 +211,24 @@ const CreateMeeting = () => {
 
   const startTimeAndroidPickerShowMode = (mode) => {
     DateTimePickerAndroid.open({
-      value: startDate,
+      value: new Date(),
       onChange: (event, selectedDate) => {
-        if (event.type === "dismissed") return;
+        console.log(startDate)
+        if (event.type === "dismissed") {
+          if(!moment(startDate).isValid)
+          setStartDate(new Date());
+          return;
+        }
         const resultingDate = convertedDateCombinationToISO(
           meetingDate,
           new Date(event.nativeEvent.timestamp)
         );
         setStartDate(resultingDate);
+        setEndDate(moment(resultingDate).add(30, "minutes"));
       },
       mode,
       is24Hour: showMode,
+      onTouchStart: () => console.log(startDate)
     });
   };
 
@@ -156,181 +260,379 @@ const CreateMeeting = () => {
     endTimeAndroidPickerShowMode("time");
   };
 
+  const renderReoccurence = () => {
+    return (
+      <View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            backgroundColor: "black",
+            borderRadius: 5,
+            marginBottom: 10,
+          }}
+        >
+          <RadioButton.Group
+            onValueChange={(newValue) => setRecurringType(newValue)}
+            value={recurringType}
+          >
+            <RadioButton.Item
+              label="Every Day"
+              value={OccurrenceType.EVERYDAY}
+              labelStyle={{
+                color: "white",
+              }}
+            />
+            <RadioButton.Item
+              label="Every Week Days"
+              value={OccurrenceType.EVERYWEEKDAY}
+              labelStyle={{
+                color: "white",
+              }}
+            />
+            <RadioButton.Item
+              label="Selected Days"
+              value={OccurrenceType.SELECTEDDAYS}
+              labelStyle={{
+                color: "white",
+              }}
+            />
+          </RadioButton.Group>
+          {recurringType === OccurrenceType.SELECTEDDAYS ? (
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                alignItems: "flex-start",
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "column",
+                  justifyContent: "flex-start",
+                  alignItems: "flex-start",
+                }}
+              >
+                <Checkbox.Item
+                  label="Mon"
+                  position="leading"
+                  labelStyle={{
+                    color: "white",
+                  }}
+                  status={selectedWeekDays.Mon ? "checked" : "unchecked"}
+                  onPress={() =>
+                    setSelectedWeekDays({
+                      ...selectedWeekDays,
+                      Mon: !selectedWeekDays.Mon,
+                    })
+                  }
+                />
+                <Checkbox.Item
+                  label="Tue"
+                  position="leading"
+                  labelStyle={{
+                    color: "white",
+                  }}
+                  status={selectedWeekDays.Tue ? "checked" : "unchecked"}
+                  onPress={() =>
+                    setSelectedWeekDays({
+                      ...selectedWeekDays,
+                      Tue: !selectedWeekDays.Tue,
+                    })
+                  }
+                />
+                <Checkbox.Item
+                  label="Wed"
+                  position="leading"
+                  labelStyle={{
+                    color: "white",
+                  }}
+                  status={selectedWeekDays.Wed ? "checked" : "unchecked"}
+                  onPress={() =>
+                    setSelectedWeekDays({
+                      ...selectedWeekDays,
+                      Wed: !selectedWeekDays.Wed,
+                    })
+                  }
+                />
+              </View>
+              <View
+                style={{
+                  flexDirection: "column",
+                  justifyContent: "flex-start",
+                  alignItems: "flex-start",
+                }}
+              >
+                <Checkbox.Item
+                  label="Thu"
+                  position="leading"
+                  labelStyle={{
+                    color: "white",
+                  }}
+                  status={selectedWeekDays.Thu ? "checked" : "unchecked"}
+                  onPress={() =>
+                    setSelectedWeekDays({
+                      ...selectedWeekDays,
+                      Thu: !selectedWeekDays.Thu,
+                    })
+                  }
+                />
+                <Checkbox.Item
+                  label="Fri"
+                  position="leading"
+                  labelStyle={{
+                    color: "white",
+                  }}
+                  status={selectedWeekDays.Fri ? "checked" : "unchecked"}
+                  onPress={(e) => {
+                    setSelectedWeekDays({
+                      ...selectedWeekDays,
+                      Fri: !selectedWeekDays.Fri,
+                    });
+                  }}
+                />
+              </View>
+            </View>
+          ) : null}
+        </View>
+      </View>
+    );
+  }
+
   if (isLoading) {
     return <BusyComponent />;
   }
 
   return (
-    <Formik
-      initialValues={{
-        siteId: loggedInUser.SiteId,
-        createdBy: loggedInUser.Username,
-        departmentId: departmentId,
-        meetingName: "",
-        detail: "",
-        startDate: "",
-        endDate: "",
-        lateAfter: "5",
-      }}
-      onSubmit={async (values) => {
-        const finalValues = { ...values, startDate, endDate, departmentId };
-        await saveMeeting(finalValues);
-      }}
-    >
-      {({ handleChange, handleBlur, handleSubmit, values }) => (
-        <View style={styles.container}>
-          <Text
-            style={{
-              textAlign: "center",
-              color: "red",
-              fontSize: 18,
-              fontFamily: "RobotoCondensed_400Regular",
-            }}
-          >
-            {createFailed ? "MEETING NOT CREATED! PLEASE TRY AGAIN." : ""}
-          </Text>
-          <AppTextInput
-            onChangeText={handleChange("meetingName")}
-            onBlur={handleBlur("meetingName")}
-            value={values.meetingName}
-            placeholder="Meeting"
-            label="Meeting"
-            onPressIn={() => setCreateFailed(false)}
-          />
-          <AppTextInput
-            onChangeText={handleChange("detail")}
-            onBlur={handleBlur("detail")}
-            value={values.detail}
-            placeholder="Description"
-            label="Description"
-            multiline
-            onPressIn={() => setCreateFailed(false)}
-          />
-          <View style={styles.linerRowContainer}>
-            <View style={styles.linerRowSubContainer}>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "column",
-                  justifyContent: "flex-end",
-                  paddingTop: 30,
-                }}
-              >
-                <Text style={{ fontSize: 14, color: "black" }}>Department</Text>
-                <DropDownPicker
-                  schema={{
-                    label: "name",
-                    value: "id",
-                  }}
-                  open={open}
-                  value={value}
-                  items={departments}
-                  setOpen={setOpen}
-                  setValue={setValue}
-                  onChangeValue={(value) => setDepartmentId(value)}
+    <ScrollView>
+      <Formik
+        initialValues={{
+          siteId: loggedInUser.SiteId,
+          createdBy: loggedInUser.Username,
+          departmentId: departmentId,
+          meetingName: "",
+          detail: "",
+          startDate: "",
+          endDate: "",
+          lateAfter: "5",
+        }}
+        onSubmit={async (values) => {
+          const finalValues = { ...values, startDate, endDate, departmentId, recurringDates };
+          console.log(finalValues);
+          // await saveMeeting(finalValues);
+        }}
+      >
+        {({ handleChange, handleBlur, handleSubmit, values }) => (
+          <View style={styles.container}>
+            <Text
+              style={{
+                textAlign: "center",
+                color: "red",
+                fontSize: 18,
+                fontFamily: "RobotoCondensed_400Regular",
+              }}
+            >
+              {createFailed ? "MEETING NOT CREATED! PLEASE TRY AGAIN." : ""}
+            </Text>
+            <AppTextInput
+              onChangeText={handleChange("meetingName")}
+              onBlur={handleBlur("meetingName")}
+              value={values.meetingName}
+              placeholder="Meeting"
+              label="Meeting"
+              onPressIn={() => setCreateFailed(false)}
+            />
+            <AppTextInput
+              onChangeText={handleChange("detail")}
+              onBlur={handleBlur("detail")}
+              value={values.detail}
+              placeholder="Description"
+              label="Description"
+              multiline
+              onPressIn={() => setCreateFailed(false)}
+            />
+            <View style={styles.linerRowContainer}>
+              <View style={styles.linerRowSubContainer}>
+                <View
                   style={{
-                    ...CommonStyles.textInput,
-                    borderTopColor: "transparent",
-                    borderLeftColor: "transparent",
-                    borderRightColor: "transparent",
+                    flex: 1,
+                    flexDirection: "column",
+                    justifyContent: "flex-end",
+                    paddingTop: 30,
                   }}
-                  placeholder="Department"
-                  textStyle={{
-                    fontFamily: "RobotoCondensed_400Regular",
+                >
+                  <Text style={{ fontSize: 14, color: "black" }}>
+                    Department
+                  </Text>
+                  <DropDownPicker
+                    schema={{
+                      label: "name",
+                      value: "id",
+                    }}
+                    open={open}
+                    value={value}
+                    items={departments}
+                    setOpen={setOpen}
+                    setValue={setValue}
+                    onChangeValue={(value) => setDepartmentId(value)}
+                    style={{
+                      ...CommonStyles.textInput,
+                      borderTopColor: "transparent",
+                      borderLeftColor: "transparent",
+                      borderRightColor: "transparent",
+                    }}
+                    placeholder="Department"
+                    textStyle={{
+                      fontFamily: "RobotoCondensed_400Regular",
+                    }}
+                  />
+                </View>
+              </View>
+              <View style={{ paddingLeft: 10, ...styles.linerRowSubContainer }}>
+                <AppTextInput
+                  onChangeText={handleChange("lateAfter")}
+                  onBlur={handleBlur("lateAfter")}
+                  value={values.lateAfter}
+                  placeholder="Late After"
+                  label="Late After (in Mins.)"
+                  style={{
+                    minWidth: "45%",
+                    //maxWidth: "80%",
                   }}
+                  keyboardType="number-pad"
                 />
               </View>
             </View>
-            <View style={{ paddingLeft: 10, ...styles.linerRowSubContainer }}>
-              <AppTextInput
-                onChangeText={handleChange("lateAfter")}
-                onBlur={handleBlur("lateAfter")}
-                value={values.lateAfter}
-                placeholder="Late After"
-                label="Late After (in Mins.)"
-                style={{
-                  minWidth: "45%",
-                  //maxWidth: "80%",
-                }}
-                keyboardType="number-pad"
-              />
-            </View>
-          </View>
 
-          <View style={styles.rowContainer}>
-            <AppTextInput
-              value={moment(meetingDate).format("dddd, MMMM Do YYYY")}
-              placeholder="Date"
-              label="Date"
-              editable={false}
-              style={{
-                backgroundColor: dateTimeBackgroundColor,
-              }}
-            />
-            <TouchableOpacity activeOpacity={0.7}>
-              <IconButton
-                color={iconColor}
-                icon="calendar-month"
-                size={iconSize}
-                onPress={showDatePicker}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.multipleRowContainer}>
+            <View>
+              <View
+                style={{
+                  flexDirection: "column",
+                  justifyContent: "flex-start",
+                  alignItems: "flex-start",
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                  }}
+                >
+                  <Checkbox.Item
+                    color="black"
+                    status={recurring ? "checked" : "unchecked"}
+                    onPress={() => {
+                      setRecurring(!recurring);
+                    }}
+                    label="Is recurring?"
+                    position="leading"
+                  />
+                  {/* <Text>Is recurring?</Text> */}
+                  {recurring ? (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text> For </Text>
+                      <AppTextInput
+                        onChangeText={(value) => setRecurringFor(value)}
+                        
+                        value={recurringFor}
+                        placeholder="..in days"
+                        style={{
+                          minWidth: "45%",
+                          //maxWidth: "80%",
+                        }}
+                        keyboardType="number-pad"
+                      />
+                      <Text> Days</Text>
+                    </View>
+                  ) : null}
+                </View>
+                {recurring ? renderReoccurence() : null}
+              </View>
+            </View>
+
             <View style={styles.rowContainer}>
               <AppTextInput
-                value={convertToHourMinute(convertedStartDate())}
-                placeholder="From"
-                label="From"
+                value={moment(meetingDate).format("dddd, MMMM Do YYYY")}
+                placeholder="Date"
+                label="Date"
                 editable={false}
                 style={{
-                  minWidth: "30%",
                   backgroundColor: dateTimeBackgroundColor,
                 }}
               />
               <TouchableOpacity activeOpacity={0.7}>
                 <IconButton
                   color={iconColor}
-                  icon="calendar-clock"
+                  icon="calendar-month"
                   size={iconSize}
-                  onPress={showStartTimePicker}
+                  onPress={showDatePicker}
                 />
               </TouchableOpacity>
             </View>
-            <View style={styles.rowContainer}>
-              <AppTextInput
-                value={convertToHourMinute(convertedEndDate())}
-                placeholder="To"
-                label="To"
-                editable={false}
-                style={{
-                  minWidth: "30%",
-                  backgroundColor: dateTimeBackgroundColor,
-                }}
-              />
-              <TouchableOpacity activeOpacity={0.7}>
-                <IconButton
-                  color={iconColor}
-                  icon="calendar-clock"
-                  size={iconSize}
-                  onPress={showEndTimePicker}
+            <View style={styles.multipleRowContainer}>
+              <View style={styles.rowContainer}>
+                <AppTextInput
+                  value={convertToHourMinute(convertedStartDate())}
+                  placeholder="From"
+                  label="From"
+                  editable={false}
+                  style={{
+                    minWidth: "30%",
+                    backgroundColor: dateTimeBackgroundColor,
+                  }}
                 />
-              </TouchableOpacity>
+                <TouchableOpacity activeOpacity={0.7}>
+                  <IconButton
+                    color={iconColor}
+                    icon="calendar-clock"
+                    size={iconSize}
+                    onPress={showStartTimePicker}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.rowContainer}>
+                <AppTextInput
+                  value={convertToHourMinute(convertedEndDate())}
+                  placeholder="To"
+                  label="To"
+                  editable={false}
+                  style={{
+                    minWidth: "30%",
+                    backgroundColor: dateTimeBackgroundColor,
+                  }}
+                />
+                <TouchableOpacity activeOpacity={0.7}>
+                  <IconButton
+                    color={iconColor}
+                    icon="calendar-clock"
+                    size={iconSize}
+                    onPress={showEndTimePicker}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
 
-          <View style={styles.btnContainer}>
-            <AppButton
-              onPressAction={() => {
-                handleSubmit();
-              }}
-              name="btnSubmit"
-              title="save"
-            />
+            <View style={styles.btnContainer}>
+              <AppButton
+                onPressAction={() => {
+                  handleSubmit();
+                }}
+                name="btnSubmit"
+                title="save"
+              />
+            </View>
           </View>
-        </View>
-      )}
-    </Formik>
+        )}
+      </Formik>
+    </ScrollView>
   );
 };
 
@@ -367,6 +669,6 @@ const styles = StyleSheet.create({
     maxWidth: "60%",
   },
   btnContainer: {
-    paddingTop: 60,
+    paddingTop: 10,
   },
 });

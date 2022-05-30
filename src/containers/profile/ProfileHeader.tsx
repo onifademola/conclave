@@ -25,7 +25,6 @@ const styles = StyleSheet.create({
   container: {
     height: DEVICE_HEIGHT * 0.38,
     justifyContent: "flex-start",
-    padding: 15,
   },
   qrContainer: {
     flexDirection: 'row',

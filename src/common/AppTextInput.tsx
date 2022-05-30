@@ -2,13 +2,14 @@ import React from 'react';
 import { TextInput, View, Text } from "react-native";
 import CommonStyles from '../styles/common';
 
-const AppTextInput = ({
+const AppTextInput: React.FC = ({
   label,
   placeholder,
   value,
   editable = true,
   onBlur,
   onChangeText,
+  onChange,
   iconName,
   secureTextEntry = false,
   multiline = false,
@@ -32,6 +33,7 @@ const AppTextInput = ({
         clearButtonMode="always"
         onPressIn={onPressIn}
         keyboardType={keyboardType}
+        onChange={onChange}
       />
     </View>
   );
