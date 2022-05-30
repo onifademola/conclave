@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, TouchableOpacity, Text, ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  ScrollView,
+} from "react-native";
 import { Formik } from "formik";
 import { Checkbox, IconButton, RadioButton } from "react-native-paper";
 import moment from "moment";
@@ -13,6 +19,8 @@ import { HttpGet, HttpPost } from "../../consumers/http";
 import {
   convertedDateCombinationToISO,
   convertToHourMinute,
+  getRecurringDatesForEveryDay,
+  getRecurringDatesForWeekDays,
 } from "../../consumers/DateHelper";
 import { AppButton } from "../../common/AppButton";
 import AppTextInput from "../../common/AppTextInput";
@@ -27,16 +35,18 @@ const dateTimeBackgroundColor = SEC_COLOR;
 enum OccurrenceType {
   EVERYDAY = "Every Day",
   EVERYWEEKDAY = "Every Week Day",
-  SELECTEDDAYS = "Selected Days"
-};
+  SELECTEDDAYS = "Selected Days",
+}
 
 const SelectedDays = {
   Mon: false,
   Tue: false,
   Wed: false,
   Thu: false,
-  Fri: false
-}
+  Fri: false,
+};
+
+const WeekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const CreateMeeting: React.FC = () => {
   const appUser = useSelector((state) => state.user.loggedInUser);
@@ -122,10 +132,14 @@ const CreateMeeting: React.FC = () => {
         currentDate,
         endDate
       );
-      recurringResult.push({ startDate: currentStartDate, endDate: currentEndDate });
+      recurringResult.push({
+        startDate: currentStartDate,
+        endDate: currentEndDate,
+      });
     }
+    // setRecurringDates(recurringResult);
     return recurringResult;
-  }
+  };
 
   const createRecurringDatesForWeekDays = () => {
     if (recurringFor < 1) return null;
@@ -133,46 +147,68 @@ const CreateMeeting: React.FC = () => {
     const recurringResult = [];
     for (let i = 0; i < recurringFor; i++) {
       const currentDate = moment(meetingDate).add(i, "day");
-      const currentDateWeekDay = moment(meetingDate).format('ddd');
-      const isCurrentDateWeekDay = (currentDateWeekDay !== 'Sat') && (currentDateWeekDay !== 'Sun');
-      if (!isCurrentDateWeekDay) return;
-      const currentStartDate = convertedDateCombinationToISO(
-        currentDate,
-        startDate
-      );
-      const currentEndDate = convertedDateCombinationToISO(
-        currentDate,
-        endDate
-      );
-      recurringResult.push({
-        startDate: currentStartDate,
-        endDate: currentEndDate,
-      });
+      const currentDateWeekDay = moment(currentDate).format("ddd");
+      const isCurrentDateWeekDay =
+        currentDateWeekDay !== "Sat" && currentDateWeekDay !== "Sun";
+      if (isCurrentDateWeekDay) {
+        const currentStartDate = convertedDateCombinationToISO(
+          currentDate,
+          startDate
+        );
+        const currentEndDate = convertedDateCombinationToISO(
+          currentDate,
+          endDate
+        );
+        recurringResult.push({
+          startDate: currentStartDate,
+          endDate: currentEndDate,
+        });
+      }
     }
+    // setRecurringDates(recurringResult);
     return recurringResult;
   };
 
-  const createRecurringDatesForSpecificDays = (day) => {
+  const createRecurringDatesForSpecificDays = () => {
     if (recurringFor < 1) return null;
     if (!moment(meetingDate).isValid) return null;
-    const recurringResult = [];
-    for (let i = 0; i < recurringFor; i++) {
-      const currentDate = moment(meetingDate).add(i, "day");
-      const currentDateWeekDay = moment(meetingDate).format("ddd");
-      if (currentDateWeekDay !== day) return;
-      const currentStartDate = convertedDateCombinationToISO(
-        currentDate,
-        startDate
-      );
-      const currentEndDate = convertedDateCombinationToISO(
-        currentDate,
-        endDate
-      );
-      recurringResult.push({
-        startDate: currentStartDate,
-        endDate: currentEndDate,
-      });
-    }
+    const selectedDays = [];
+    WeekDays.forEach((day) => {
+      if (selectedWeekDays[day] === true) {
+        selectedDays.push(day);
+      }
+    });
+    console.log(selectedDays);
+    if (!selectedDays) return;
+    
+    let recurringResult: any[] = [];
+    selectedDays.forEach((day) => {
+      const localrecurringDates = [];
+      for (let i = 0; i < recurringFor; i++) {
+        const currentDate = moment(meetingDate).add(i, "day");
+        const currentDateWeekDay = moment(currentDate).format("ddd");
+        console.log(currentDateWeekDay);
+        if (currentDateWeekDay === day) {
+          const currentStartDate = convertedDateCombinationToISO(
+            currentDate,
+            startDate
+          );
+          const currentEndDate = convertedDateCombinationToISO(
+            currentDate,
+            endDate
+          );
+          localrecurringDates.push({
+            startDate: currentStartDate,
+            endDate: currentEndDate,
+          });
+          // console.log("REC: ", localrecurringDates);
+        }
+      }
+      const prevReults = [...recurringResult];
+      recurringResult = [...prevReults, ...localrecurringDates];      
+    });
+    // console.log("TOT: ", recurringResult);
+    // setRecurringDates(recurringResult);
     return recurringResult;
   };
 
@@ -180,11 +216,13 @@ const CreateMeeting: React.FC = () => {
     setShowMode(!showMode);
   };
 
-  const convertedStartDate = () =>
-    convertedDateCombinationToISO(meetingDate, startDate);
-
-  const convertedEndDate = () =>
-    convertedDateCombinationToISO(meetingDate, endDate);
+  const resetStates = () => {
+    setRecurring(false);
+    setRecurringType(OccurrenceType.EVERYDAY);
+    setRecurringFor(30);
+    setSelectedWeekDays(SelectedDays);
+    setRecurringDates([]);
+  }
 
   const startDateAndroidPickerShowMode = (mode) => {
     DateTimePickerAndroid.open({
@@ -197,10 +235,7 @@ const CreateMeeting: React.FC = () => {
         }
         const newDate = new Date(event.nativeEvent.timestamp);
         setMeetingDate(newDate);
-        const resultingDate = convertedDateCombinationToISO(
-          newDate,
-          startDate
-        );
+        const resultingDate = convertedDateCombinationToISO(newDate, startDate);
         setStartDate(resultingDate);
         setEndDate(moment(resultingDate).add(30, "minutes"));
       },
@@ -213,10 +248,8 @@ const CreateMeeting: React.FC = () => {
     DateTimePickerAndroid.open({
       value: new Date(),
       onChange: (event, selectedDate) => {
-        console.log(startDate)
         if (event.type === "dismissed") {
-          if(!moment(startDate).isValid)
-          setStartDate(new Date());
+          if (!moment(startDate).isValid) setStartDate(new Date());
           return;
         }
         const resultingDate = convertedDateCombinationToISO(
@@ -228,7 +261,7 @@ const CreateMeeting: React.FC = () => {
       },
       mode,
       is24Hour: showMode,
-      onTouchStart: () => console.log(startDate)
+      // onTouchStart: () => console.log(startDate)
     });
   };
 
@@ -398,7 +431,7 @@ const CreateMeeting: React.FC = () => {
         </View>
       </View>
     );
-  }
+  };
 
   if (isLoading) {
     return <BusyComponent />;
@@ -418,9 +451,36 @@ const CreateMeeting: React.FC = () => {
           lateAfter: "5",
         }}
         onSubmit={async (values) => {
-          const finalValues = { ...values, startDate, endDate, departmentId, recurringDates };
+          let recurDates: any[] = [];
+          switch (recurringType) {
+            case OccurrenceType.EVERYDAY:
+              recurDates = createRecurringDatesForEveryDay();
+              break;
+
+            case OccurrenceType.EVERYWEEKDAY:
+              recurDates = createRecurringDatesForWeekDays();
+              break;
+
+            case OccurrenceType.SELECTEDDAYS:
+              recurDates = createRecurringDatesForSpecificDays();
+              break;
+
+            default:
+              break;
+          }
+          const finalValues = {
+            ...values,
+            startDate,
+            endDate,
+            departmentId,
+            recurringDates: recurDates,
+          };
+          //console.log("we passed values")
           console.log(finalValues);
           // await saveMeeting(finalValues);
+          setTimeout(() => {
+            resetStates();
+          }, 3000);
         }}
       >
         {({ handleChange, handleBlur, handleSubmit, values }) => (
@@ -541,7 +601,6 @@ const CreateMeeting: React.FC = () => {
                       <Text> For </Text>
                       <AppTextInput
                         onChangeText={(value) => setRecurringFor(value)}
-                        
                         value={recurringFor}
                         placeholder="..in days"
                         style={{
@@ -580,7 +639,7 @@ const CreateMeeting: React.FC = () => {
             <View style={styles.multipleRowContainer}>
               <View style={styles.rowContainer}>
                 <AppTextInput
-                  value={convertToHourMinute(convertedStartDate())}
+                  value={convertToHourMinute(startDate)}
                   placeholder="From"
                   label="From"
                   editable={false}
@@ -600,7 +659,7 @@ const CreateMeeting: React.FC = () => {
               </View>
               <View style={styles.rowContainer}>
                 <AppTextInput
-                  value={convertToHourMinute(convertedEndDate())}
+                  value={convertToHourMinute(endDate)}
                   placeholder="To"
                   label="To"
                   editable={false}

@@ -56,3 +56,76 @@ export const isMeetingValidForAttendance = (
     if (parseInt(isPast, 10) > 0) return false;
     return true;
 }
+
+export const getRecurringDatesForEveryDay = (
+  meetingDate,
+  startDate,
+  endDate,
+  recurringFor
+) => {
+  if (recurringFor < 1) return null;
+  if (!moment(meetingDate).isValid) return null;
+  const recurringResult = [];
+  for (let i = 0; i < recurringFor; i++) {
+    const currentDate = moment(meetingDate).add(i, "day");
+    const currentStartDate = convertedDateCombinationToISO(
+      currentDate,
+      startDate
+    );
+    const currentEndDate = convertedDateCombinationToISO(currentDate, endDate);
+    recurringResult.push({
+      startDate: currentStartDate,
+      endDate: currentEndDate,
+    });
+  }
+  return recurringResult;
+};
+
+export const getRecurringDatesForWeekDays = (
+  meetingDate,
+  startDate,
+  endDate,
+  recurringFor
+) => {
+  if (recurringFor < 1) return null;
+  if (!moment(meetingDate).isValid) return null;
+  const recurringResult = [];
+  for (let i = 0; i < recurringFor; i++) {
+    const currentDate = moment(meetingDate).add(i, "day");
+    const currentDateWeekDay = moment(meetingDate).format("ddd");
+    const isCurrentDateWeekDay =
+      currentDateWeekDay !== "Sat" && currentDateWeekDay !== "Sun";
+    if (!isCurrentDateWeekDay) return;
+    const currentStartDate = convertedDateCombinationToISO(
+      currentDate,
+      startDate
+    );
+    const currentEndDate = convertedDateCombinationToISO(currentDate, endDate);
+    recurringResult.push({
+      startDate: currentStartDate,
+      endDate: currentEndDate,
+    });
+  }
+  return recurringResult;
+};
+
+const getRecurringDatesForSpecificDays = (day) => {
+  if (recurringFor < 1) return null;
+  if (!moment(meetingDate).isValid) return null;
+  const recurringResult = [];
+  for (let i = 0; i < recurringFor; i++) {
+    const currentDate = moment(meetingDate).add(i, "day");
+    const currentDateWeekDay = moment(meetingDate).format("ddd");
+    if (currentDateWeekDay !== day) return;
+    const currentStartDate = convertedDateCombinationToISO(
+      currentDate,
+      startDate
+    );
+    const currentEndDate = convertedDateCombinationToISO(currentDate, endDate);
+    recurringResult.push({
+      startDate: currentStartDate,
+      endDate: currentEndDate,
+    });
+  }
+  return recurringResult;
+};
