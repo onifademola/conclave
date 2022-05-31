@@ -258,7 +258,7 @@ const CreateMeeting: React.FC = () => {
 
   const endTimeAndroidPickerShowMode = (mode) => {
     DateTimePickerAndroid.open({
-      value: endDate,
+      value: new Date(),
       onChange: (event, selectedDate) => {
         if (event.type === "dismissed") return;
         const resultingDate = convertedDateCombinationToISO(
