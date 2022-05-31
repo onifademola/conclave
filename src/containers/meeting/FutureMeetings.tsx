@@ -138,6 +138,7 @@ const FutureMeetings = () => {
     return (
       <View style={styles.container}>
         <EmptyList />
+        {renderAddIcon()}
       </View>
     );
 

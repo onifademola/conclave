@@ -442,30 +442,35 @@ const CreateMeeting: React.FC = () => {
           lateAfter: "5",
         }}
         onSubmit={async (values) => {
-          let recurDates: any[] = [];
-          switch (recurringType) {
-            case OccurrenceType.EVERYDAY:
-              recurDates = createRecurringDatesForEveryDay();
-              break;
+          let sortedRecurDates = [];
+          if (recurring) {
+            let recurDates: any[] = [];
 
-            case OccurrenceType.EVERYWEEKDAY:
-              recurDates = createRecurringDatesForWeekDays();
-              break;
+            switch (recurringType) {
+              case OccurrenceType.EVERYDAY:
+                recurDates = createRecurringDatesForEveryDay();
+                break;
 
-            case OccurrenceType.SELECTEDDAYS:
-              recurDates = createRecurringDatesForSpecificDays();
-              break;
+              case OccurrenceType.EVERYWEEKDAY:
+                recurDates = createRecurringDatesForWeekDays();
+                break;
 
-            default:
-              break;
+              case OccurrenceType.SELECTEDDAYS:
+                recurDates = createRecurringDatesForSpecificDays();
+                break;
+
+              default:
+                break;
+            }
+            sortedRecurDates = recurDates.sort((a: any, b: any) => {
+              return a.startDate < b.startDate
+                ? -1
+                : a.startDate > b.startDate
+                ? 1
+                : 0;
+            });
           }
-          const sortedRecurDates = recurDates.sort((a: any, b: any) => {
-            return a.startDate < b.startDate
-              ? -1
-              : a.startDate > b.startDate
-              ? 1
-              : 0;
-          });
+          
           const finalValues = {
             ...values,
             startDate,
