@@ -2,6 +2,7 @@ import * as React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import FutureMeetingsContainer from "./FutureMeetingsContainer";
 import PastMeetingsContainer from "./PastMeetingsContainer";
+import CancelledMeetingsContainer from "./CancelledMeetingsContainer";
 import {
   PRY_COLOR,
   SEC_COLOR,
@@ -21,14 +22,19 @@ const MeetingView = () => {
       }}
     >
       <Tab.Screen
-        name="FutureMeetings"
+        name="UpcomingMeetings"
         component={FutureMeetingsContainer}
-        options={{ title: "Future Meetings" }}
+        options={{ title: "Upcoming" }}
       />
       <Tab.Screen
         name="CompletedMeetings"
         component={PastMeetingsContainer}
-        options={{ title: "Completed/Cancelled" }}
+        options={{ title: "Completed" }}
+      />
+      <Tab.Screen
+        name="CancelledMeetings"
+        component={CancelledMeetingsContainer}
+        options={{ title: "Cancelled" }}
       />
     </Tab.Navigator>
   );

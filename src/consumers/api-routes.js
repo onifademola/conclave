@@ -13,5 +13,6 @@ export const ApiRoutes = {
   getMeetings: "meeting/all/", // {siteId}"
   getFutureMeetings: "meeting/future/", // {siteId}"
   getPastMeetings: "meeting/past/", // {siteId}"
+  getCancelledMeetings: "meeting/cancelled/", // {siteId}"
   imageUriPrefix: "https://abimealy.azurewebsites.net/aworan",
 };

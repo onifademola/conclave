@@ -100,6 +100,12 @@ const FutureMeetings = () => {
     const url = `${ApiRoutes.getFutureMeetings}/${loggedInUser.SiteId}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {
+        console.log(res)
+        if (!res.data) {
+          setMeetings([]);
+          setRefreshing(false);
+          return;
+        }
         const sortedMeetings = res.data.sort((a: any, b: any) => {
           return a.StartDate < b.StartDate
             ? -1
@@ -111,6 +117,7 @@ const FutureMeetings = () => {
         setRefreshing(false);
       })
       .catch((err) => {
+        setMeetings([]);
         setRefreshing(false);
       });
   };
@@ -127,7 +134,7 @@ const FutureMeetings = () => {
 
   if (isLoading) return <BusyComponent />;
 
-  if (!meetings)
+  if (!meetings || meetings.length < 1)
     return (
       <View style={styles.container}>
         <EmptyList />

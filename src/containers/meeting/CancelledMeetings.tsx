@@ -2,34 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { SafeAreaView, 
   View, 
   FlatList, 
-  StyleSheet, 
-  TouchableOpacity, 
+  StyleSheet,
   RefreshControl
 } from 'react-native';
-import { IconButton } from 'react-native-paper';
-import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import ItemComponent from './ItemComponent';
 import EmptyList from '../../common/EmptyList';
 import { ApiRoutes } from "../../consumers/api-routes";
-import { HttpGet, HttpDelete, HttpPost } from "../../consumers/http";
+import { HttpGet } from "../../consumers/http";
 import BusyComponent from '../../common/BusyComponent';
 
-const renderAddIcon = () => {
-  const navigation = useNavigation();
-  return ( 
-    <TouchableOpacity activeOpacity={0.7} style={styles.icon}>
-      <IconButton
-        color="white"
-        icon="plus-circle"
-        size={70}
-        onPress={() => navigation.navigate("CreateMeeting")}
-      />
-    </TouchableOpacity>
-  );
-};
-
-const PastMeetings = () => {
+const CancelledMeetings = () => {
   const appUser = useSelector((state) => state.user.loggedInUser);
   const [loggedInUser, setLoggedInUser] = useState(appUser);
   const [isLoading, setIsLoading] = useState(true);
@@ -41,7 +24,7 @@ const PastMeetings = () => {
   }, []);
 
   const fetchMeetings = async () => {
-    const url = `${ApiRoutes.getPastMeetings}/${loggedInUser.SiteId}`;
+    const url = `${ApiRoutes.getCancelledMeetings}/${loggedInUser.SiteId}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {
         const sortedMeetings = res.data.sort((a: any, b: any) => {
@@ -60,45 +43,16 @@ const PastMeetings = () => {
   };
 
   const UpdateMeeting = async (meeting) => {
-    setIsLoading(true);
-    const { Id } = meeting;
-    const url = `${ApiRoutes.updateMeeting}/${Id}`;
-    await HttpPost(loggedInUser.Token, url, meeting)
-      .then(async (res) => {
-        if (res && res.status === 200) {
-          await fetchMeetings()
-            .then(() => setIsLoading(false))
-            .catch(() => setIsLoading(false));
-        } else {
-          setIsLoading(false);
-        }
-      })
-      .catch((err) => {
-        setIsLoading(false);
-      });
+    console.log("Not implemented.");
   };
 
   const DeleteMeeting = async (meetingId) => {
-    setIsLoading(true);
-    const url = `${ApiRoutes.deleteMeeting}/${meetingId}`;
-    await HttpDelete(loggedInUser.Token, url)
-      .then(async (res) => {
-        if (res && res.status === 200) {
-          await fetchMeetings()
-            .then(() => setIsLoading(false))
-            .catch(() => setIsLoading(false));
-        } else {
-          setIsLoading(false);
-        }
-      })
-      .catch((err) => {
-        setIsLoading(false);
-      });
+    console.log("Not implemented.");
   };
 
   const onRefresh = async () => {
     setRefreshing(true);
-    const url = `${ApiRoutes.getPastMeetings}/${loggedInUser.SiteId}`;
+    const url = `${ApiRoutes.getCancelledMeetings}/${loggedInUser.SiteId}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {
         const sortedMeetings = res.data.sort((a: any, b: any) => {
@@ -164,4 +118,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PastMeetings;
+export default CancelledMeetings;
