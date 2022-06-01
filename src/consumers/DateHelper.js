@@ -52,8 +52,26 @@ export const calculatePunctuality = (
 export const isMeetingValidForAttendance = (
   meetingEndDateTime,
   attendeeArrivalTime) => {
-    const isPast = moment(attendeeArrivalTime).diff(meetingEndDateTime);
+    const isPast = moment(attendeeArrivalTime).diff(
+      meetingEndDateTime,
+      "minutes"
+    );
+    // if the result here is greater than 0, then the meeting endDateTime has past
+    // attendance can no more be done for the meeting.
     if (parseInt(isPast, 10) > 0) return false;
+    return true;
+}
+
+export const isMeetingReadyForAttendance = (
+  meetingStartDateTime,
+  attendeeArrivalTime) => {
+    const isInTheFuture = moment(meetingStartDateTime).diff(
+      attendeeArrivalTime,
+      "minutes"
+    );
+    // if the signin time is greater than 10 minutes retrun false
+    // you cannot begin to take attendance for a meeting earlier than 10 minutes to meeting time
+    if (parseInt(isInTheFuture, 10) > 10) return false;
     return true;
 }
 

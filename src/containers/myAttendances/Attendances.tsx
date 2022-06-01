@@ -45,9 +45,7 @@ const Attendances = () => {
   };
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, }}
-    >
+    <SafeAreaView style={{ flex: 1 }}>
       {isLoading ? (
         <BusyComponent />
       ) : attendanceList && attendanceList.length ? (
@@ -57,7 +55,7 @@ const Attendances = () => {
           keyExtractor={(item) => item.Id}
         />
       ) : (
-        <EmptyList />
+        <EmptyList touched={() => fetchAttendanceList()} />
       )}
     </SafeAreaView>
   );

@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useKeepAwake } from 'expo-keep-awake';
-import { useNavigation } from "@react-navigation/native";
 import { useSelector } from 'react-redux';
 import BusyComponent from '../../common/BusyComponent';
 import ModalAlertComponent, { ModalType } from '../../common/ModalAlertComponent';
 import { ApiRoutes } from '../../consumers/api-routes';
 import { HttpPost } from '../../consumers/http';
-import { isMeetingValidForAttendance, calculatePunctuality } from '../../consumers/DateHelper';
+import {
+  isMeetingValidForAttendance,
+  calculatePunctuality,
+  isMeetingReadyForAttendance
+} from '../../consumers/DateHelper';
 
 interface Attendance {
   email: string;
@@ -57,17 +60,30 @@ const TakeAttendanceView = (prop: any) => {
   const isAttendancePossible = (arrivaleDateTime) => {
     if (Done == null && Cancelled == null) return true;
     if (Cancelled) return false;
-    if (Done) return false;
     const isValid = isMeetingValidForAttendance(EndDate, arrivaleDateTime);
-    if (isValid) return true;
-      else return false;    
+    return isValid;
   };
+
+  const canAttendanceStart = (arrivalDateTime) => {
+    const canStart = isMeetingReadyForAttendance(StartDate, arrivalDateTime);
+    return canStart;
+  }
 
   const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
     setIsLoading(true);
     //get the time of attendance for this registration
     const arrivalDateTime = new Date();
+    const canAttendanceBeStarted = canAttendanceStart(arrivalDateTime);
+    if (!canAttendanceBeStarted) {
+      setModalMessage(
+        "Sorry, You cannot begin to take attendance for a meeting earlier than 10 minutes to meeting time."
+      );
+      setModalType(ModalType.error);
+      setIsLoading(false);
+      setScanned(false);
+      return renderModal();
+    }
     const isAttendanceStillPossible = isAttendancePossible(arrivalDateTime);
     if (!isAttendanceStillPossible) {
       setModalMessage(

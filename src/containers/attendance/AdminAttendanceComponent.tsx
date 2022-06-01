@@ -32,7 +32,7 @@ const renderAvatar = (uri: string) => (
 );
 
 const AdminAttendanceComponent = ({ item }) => {  
-  const { FirstName, LastName, Email, ArrivalTime, ImagePath, Status } = item;
+  const { FirstName, LastName, Email, ArrivalTime, ImagePath, Status, DepartmentName } = item;
   const imageUri = `${ApiRoutes.imageUriPrefix}/${ImagePath}`;
   const [imageIsValid, setImageIsValid] = useState(false);
 
@@ -50,7 +50,7 @@ const AdminAttendanceComponent = ({ item }) => {
 
   return (
     <View style={styles.row}>
-      {imageIsValid ? renderAvatar(imageUri) : renderAvatarText(Email)}      
+      {imageIsValid ? renderAvatar(imageUri) : renderAvatarText(Email)}
       <View>
         <View style={styles.nameContainer}>
           <Text style={styles.nameTxt}>{getName()}</Text>
@@ -63,6 +63,9 @@ const AdminAttendanceComponent = ({ item }) => {
               : null}{" "}
           </Text>
           <Text style={styles.msgTxt}>({Status})</Text>
+        </View>
+        <View style={styles.msgContainer}>
+          <Text style={styles.msgTxt}>{DepartmentName}</Text>
         </View>
       </View>
     </View>
@@ -87,7 +90,7 @@ const styles = StyleSheet.create({
   nameContainer: {
     flexDirection: "row",
     justifyContent: "flex-start",
-    // width: 280,
+    width: "96%",
   },
   nameTxt: {
     marginLeft: 15,

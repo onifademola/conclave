@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, Text } from "react-native";
 import { Card, IconButton, Title as Tit, Paragraph } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
@@ -14,6 +14,7 @@ import MeetingStatus, {
 } from "../../common/MeetingStatus";
 import { prodUrl } from "../../consumers/http";
 import TinyBusyComponent from "../../common/TinyBusyComponent";
+import { isMeetingValidForAttendance } from "../../consumers/DateHelper";
 
 const { Title, Content } = Card;
 
@@ -35,11 +36,12 @@ const ItemComponent = (prop) => {
     Done,
     Cancelled,
     LateAfter,
+    RecurringId,
   } = meeting;
 
+  const canDoAttendance = isMeetingValidForAttendance(EndDate, new Date());
   const [animation, setAnimation] = useState("");
-  const [isPageLoading, setIsPageLoading] = useState(false);
- 
+  const [isPageLoading, setIsPageLoading] = useState(false); 
   const iconSize = 30;
 
   const deleteAlert = () =>
@@ -169,6 +171,7 @@ const ItemComponent = (prop) => {
               onPress={() =>
                 navigation.navigate("TakeAttendanceView", { meeting })
               }
+              disabled={!canDoAttendance}
             />
           )}
           right={(props) => (
@@ -217,6 +220,11 @@ const ItemComponent = (prop) => {
               <Tit style={{ ...styles.content, fontSize: 28 }}>
                 {MeetingName}
               </Tit>
+              {RecurringId && RecurringId.length ? (
+                <Text  style={{ fontSize: 10, padding: 0, fontWeight: "bold" }}>
+                  RECURRING MEETING
+                </Text>
+              ) : null}
               <Tit
                 style={{ ...styles.content, fontSize: 15, fontWeight: "800" }}
               >{`${moment(StartDate).format("dddd, MMMM DD, YYYY")} || ${moment(

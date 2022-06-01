@@ -100,7 +100,6 @@ const FutureMeetings = () => {
     const url = `${ApiRoutes.getFutureMeetings}/${loggedInUser.SiteId}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {
-        console.log(res)
         if (!res.data) {
           setMeetings([]);
           setRefreshing(false);
@@ -137,7 +136,7 @@ const FutureMeetings = () => {
   if (!meetings || meetings.length < 1)
     return (
       <View style={styles.container}>
-        <EmptyList />
+        <EmptyList touched={() => fetchMeetings()} />
         {renderAddIcon()}
       </View>
     );

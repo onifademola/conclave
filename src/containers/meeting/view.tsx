@@ -11,33 +11,28 @@ import {
 
 const Tab = createMaterialTopTabNavigator();
 
-const MeetingView = () => {
-  return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarLabelStyle: { fontSize: 18 },
-        tabBarStyle: { backgroundColor: SEC_TEXT_COLOR },
-        tabBarInactiveTintColor: PRY_COLOR,
-        tabBarActiveTintColor: SEC_COLOR,
-      }}
-    >
-      <Tab.Screen
-        name="UpcomingMeetings"
-        component={FutureMeetingsContainer}
-        options={{ title: "Upcoming" }}
-      />
-      <Tab.Screen
-        name="CompletedMeetings"
-        component={PastMeetingsContainer}
-        options={{ title: "Completed" }}
-      />
-      <Tab.Screen
-        name="CancelledMeetings"
-        component={CancelledMeetingsContainer}
-        options={{ title: "Cancelled" }}
-      />
-    </Tab.Navigator>
-  );
-};
+const MeetingView: React.FC = () => (
+  <Tab.Navigator
+    screenOptions={{
+      tabBarLabelStyle: { fontSize: 18 },
+      tabBarStyle: { backgroundColor: SEC_TEXT_COLOR },
+      tabBarInactiveTintColor: PRY_COLOR,
+      tabBarActiveTintColor: SEC_COLOR,
+    }}
+  >
+    <Tab.Screen
+      name="UpcomingMeetings"
+      component={FutureMeetingsContainer}
+      options={{ title: "Upcoming" }} />
+    <Tab.Screen
+      name="CompletedMeetings"
+      component={PastMeetingsContainer}
+      options={{ title: "Completed" }} />
+    <Tab.Screen
+      name="CancelledMeetings"
+      component={CancelledMeetingsContainer}
+      options={{ title: "Cancelled" }} />
+  </Tab.Navigator>
+);
 
 export default MeetingView;

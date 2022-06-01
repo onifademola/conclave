@@ -3,7 +3,6 @@ import { View, StyleSheet } from "react-native";
 import { Button, Snackbar } from "react-native-paper";
 
 const AppNotification = (message) => {
-  console.log("notification reached as: ", message);
   const [visible, setVisible] = React.useState(true);
   const onToggleSnackBar = () => setVisible(!visible);
   const onDismissSnackBar = () => setVisible(false);

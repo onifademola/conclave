@@ -1,16 +1,16 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { IconButton, Title } from "react-native-paper";
 import { fontSize } from '../styles/fonts';
 
 const baseColor = "black";
 
-const EmptyList = () => {
+const EmptyList = ({ touched }) => {
   return (
     <View style={styles.container}>
-      <View style={styles.icon}>
-        <IconButton color={baseColor} icon="pail-off" size={80} />
-      </View>
+      <TouchableOpacity style={styles.icon}>
+        <IconButton color={baseColor} icon="pail-off" size={80} onPress={touched} />
+      </TouchableOpacity>
       <Title style={styles.title}>Sorry, nothing is in this list!</Title>
     </View>
   );

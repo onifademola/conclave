@@ -131,7 +131,7 @@ const PastMeetings = () => {
   if (!meetings || meetings.length < 1)
     return (
       <View style={styles.container}>
-        <EmptyList />
+        <EmptyList touched={() => fetchMeetings()} />
       </View>
     );
 

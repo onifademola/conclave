@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Text,
   ScrollView,
+  SafeAreaView, VirtualizedList,
 } from "react-native";
 import { Formik } from "formik";
 import { Checkbox, IconButton, RadioButton } from "react-native-paper";
@@ -470,7 +471,7 @@ const CreateMeeting: React.FC = () => {
                 : 0;
             });
           }
-          
+
           const finalValues = {
             ...values,
             startDate,
@@ -510,7 +511,7 @@ const CreateMeeting: React.FC = () => {
               multiline
               onPressIn={() => setCreateFailed(false)}
             />
-            <View style={styles.linerRowContainer}>
+            <SafeAreaView style={styles.linerRowContainer}>
               <View style={styles.linerRowSubContainer}>
                 <View
                   style={{
@@ -528,6 +529,7 @@ const CreateMeeting: React.FC = () => {
                       label: "name",
                       value: "id",
                     }}
+                    dropDownDirection="TOP"
                     open={open}
                     value={value}
                     items={departments}
@@ -561,7 +563,7 @@ const CreateMeeting: React.FC = () => {
                   keyboardType="number-pad"
                 />
               </View>
-            </View>
+            </SafeAreaView>
 
             <View>
               <View
@@ -696,6 +698,10 @@ const CreateMeeting: React.FC = () => {
 export default CreateMeeting;
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    flexWrap: "wrap",
+  },
   container: {
     flex: 1,
     justifyContent: "flex-start",
