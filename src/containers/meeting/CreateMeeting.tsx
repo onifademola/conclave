@@ -5,16 +5,14 @@ import {
   TouchableOpacity,
   Text,
   ScrollView,
-  SafeAreaView, VirtualizedList,
 } from "react-native";
 import { Formik } from "formik";
 import { Checkbox, IconButton, RadioButton } from "react-native-paper";
 import moment from "moment";
 import { useNavigation } from "@react-navigation/native";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
-import DropDownPicker from "react-native-dropdown-picker";
 import { useSelector } from "react-redux";
-import Toast from "react-native-simple-toast";
+import ModalSelector from "react-native-modal-selector";
 import { ApiRoutes } from "../../consumers/api-routes";
 import { HttpGet, HttpPost } from "../../consumers/http";
 import {
@@ -23,8 +21,12 @@ import {
 } from "../../consumers/DateHelper";
 import { AppButton } from "../../common/AppButton";
 import AppTextInput from "../../common/AppTextInput";
-import { SEC_COLOR } from "../../styles/colors";
-import CommonStyles from "../../styles/common";
+import {
+  SEC_COLOR,
+  ACCENT,
+  SEC_TEXT_COLOR,
+  PRY_COLOR,
+} from "../../styles/colors";
 import BusyComponent from "../../common/BusyComponent";
 
 const iconSize = 40;
@@ -56,14 +58,13 @@ const CreateMeeting: React.FC = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [showMode, setShowMode] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
   const [departmentId, setDepartmentId] = useState(0);
+  const [departmentName, setDepartmentName] = useState("");
   const [departments, setDepartments] = useState([]);
   const [createFailed, setCreateFailed] = useState(false);
   const [recurring, setRecurring] = useState(false);
   const [recurringType, setRecurringType] = useState(OccurrenceType.EVERYDAY);
-  const [recurringFor, setRecurringFor] = useState(30);
+  const [recurringFor, setRecurringFor] = useState("30");
   const [selectedWeekDays, setSelectedWeekDays] = useState(SelectedDays);
   
   useEffect(() => {
@@ -82,8 +83,17 @@ const CreateMeeting: React.FC = () => {
     setIsLoading(true);
     await HttpGet(loggedInUser.Token, ApiRoutes.getDepartments)
       .then((res) => {
-        const result = res.data;
-        setDepartments(result.sort((a: any, b: any) => a.name - b.name));
+        const result = res.data.map((item) => ({
+          key: item.id,
+          label: item.name,
+        }));
+        setDepartments(result.sort((a: any, b: any) => {
+          return a.label < b.label
+            ? -1
+            : a.label > b.label
+            ? 1
+            : 0;
+        }));
         setIsLoading(false);
       })
       .catch((err) => {
@@ -511,7 +521,7 @@ const CreateMeeting: React.FC = () => {
               multiline
               onPressIn={() => setCreateFailed(false)}
             />
-            <SafeAreaView style={styles.linerRowContainer}>
+            <View style={styles.linerRowContainer}>
               <View style={styles.linerRowSubContainer}>
                 <View
                   style={{
@@ -521,32 +531,34 @@ const CreateMeeting: React.FC = () => {
                     paddingTop: 30,
                   }}
                 >
-                  <Text style={{ fontSize: 14, color: "black" }}>
-                    Department
-                  </Text>
-                  <DropDownPicker
-                    schema={{
-                      label: "name",
-                      value: "id",
+                  <ModalSelector
+                    data={departments}
+                    initValue="Select department"
+                    onChange={(value) => {
+                      setDepartmentName(value.label);
+                      setDepartmentId(value.key);
                     }}
-                    dropDownDirection="TOP"
-                    open={open}
-                    value={value}
-                    items={departments}
-                    setOpen={setOpen}
-                    setValue={setValue}
-                    onChangeValue={(value) => setDepartmentId(value)}
-                    style={{
-                      ...CommonStyles.textInput,
-                      borderTopColor: "transparent",
-                      borderLeftColor: "transparent",
-                      borderRightColor: "transparent",
+                    optionStyle={{
+                      backgroundColor: SEC_TEXT_COLOR,
+                      borderColor: "white",
                     }}
-                    placeholder="Department"
-                    textStyle={{
-                      fontFamily: "RobotoCondensed_400Regular",
+                    optionContainerStyle={{
+                      backgroundColor: SEC_TEXT_COLOR,
                     }}
-                  />
+                    optionTextStyle={{
+                      color: "white",
+                    }}
+                  >
+                    <AppTextInput
+                      value={departmentName}
+                      placeholder="Department"
+                      label="Department"
+                      editable={false}
+                      style={{
+                        backgroundColor: dateTimeBackgroundColor,
+                      }}
+                    />
+                  </ModalSelector>
                 </View>
               </View>
               <View style={{ paddingLeft: 10, ...styles.linerRowSubContainer }}>
@@ -563,7 +575,7 @@ const CreateMeeting: React.FC = () => {
                   keyboardType="number-pad"
                 />
               </View>
-            </SafeAreaView>
+            </View>
 
             <View>
               <View
@@ -589,7 +601,6 @@ const CreateMeeting: React.FC = () => {
                     label="Is recurring?"
                     position="leading"
                   />
-                  {/* <Text>Is recurring?</Text> */}
                   {recurring ? (
                     <View
                       style={{

@@ -44,6 +44,7 @@
     "react-native-custom-qr-codes-expo": "^2.2.0",
     "react-native-dropdown-picker": "^5.4.2",
     "react-native-gesture-handler": "~2.2.1",
+    "react-native-modal-selector": "^2.1.0",
     "react-native-pager-view": "5.4.15",
     "react-native-paper": "^4.12.1",
     "react-native-safe-area-context": "4.2.4",
