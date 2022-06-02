@@ -56,7 +56,7 @@ const CreateMeeting: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [meetingDate, setMeetingDate] = useState(new Date());
   const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(moment(new Date()).add(30, "minutes"));
   const [showMode, setShowMode] = useState(false);
   const [departmentId, setDepartmentId] = useState(0);
   const [departmentName, setDepartmentName] = useState("");

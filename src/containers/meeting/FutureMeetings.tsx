@@ -6,7 +6,7 @@ import { SafeAreaView,
   TouchableOpacity, 
   RefreshControl
 } from 'react-native';
-import { IconButton } from 'react-native-paper';
+import { IconButton, Searchbar } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import ItemComponent from './ItemComponent';
@@ -35,6 +35,8 @@ const FutureMeetings = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [meetings, setMeetings] = useState([]);
+  const [baseMeetings, setBaseMeetings] = useState([]);
+  const [searchItem, setSearchItem] = useState("");
 
   useEffect(() => {
     fetchMeetings();
@@ -51,6 +53,7 @@ const FutureMeetings = () => {
             ? 1
             : 0;
         });
+        setBaseMeetings(sortedMeetings);
         setMeetings(sortedMeetings);
         setIsLoading(false);
       })
@@ -100,7 +103,8 @@ const FutureMeetings = () => {
     const url = `${ApiRoutes.getFutureMeetings}/${loggedInUser.SiteId}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {
-        if (!res.data) {
+        if (res && !res.data) {
+          setBaseMeetings([]);
           setMeetings([]);
           setRefreshing(false);
           return;
@@ -112,10 +116,12 @@ const FutureMeetings = () => {
             ? 1
             : 0;
         });
+        setBaseMeetings(sortedMeetings);
         setMeetings(sortedMeetings);
         setRefreshing(false);
       })
       .catch((err) => {
+        setBaseMeetings([]);
         setMeetings([]);
         setRefreshing(false);
       });
@@ -131,26 +137,59 @@ const FutureMeetings = () => {
     );
   };
 
-  if (isLoading) return <BusyComponent />;
+  const serachData = param => {
+     const serachResult = baseMeetings.filter((item) => {
+       return (
+         item.MeetingName &&
+         item.MeetingName.length &&
+         item.MeetingName.toString().toLowerCase().includes(param.toLowerCase())
+         || item.Detail.toString().toLowerCase().includes(param.toLowerCase())
+         || item.Department.toString().toLowerCase().includes(param.toLowerCase())
+       );
+     });
+     setMeetings(serachResult);
+  }
 
-  if (!meetings || meetings.length < 1)
-    return (
-      <View style={styles.container}>
-        <EmptyList touched={() => fetchMeetings()} />
-        {renderAddIcon()}
-      </View>
-    );
+  const clearSearch = () => {
+    setMeetings(baseMeetings);
+  }
+
+  if (isLoading) return <BusyComponent />;
 
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: "flex-start" }}>
-      <FlatList
-        data={meetings}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.Id}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      />
+      <View
+        style={{
+          marginLeft: 15,
+          marginRight: 15,
+          marginBottom: 5,
+        }}
+      >
+        <Searchbar
+          placeholder="Search"
+          onChangeText={(value) => {
+            setSearchItem(value);
+            serachData(value);
+          }}
+          // value={searchItem}
+        />
+      </View>
+      {!meetings || meetings.length < 1 ? (
+        <View style={styles.container}>
+          <EmptyList touched={() => fetchMeetings()} />
+          {renderAddIcon()}
+        </View>
+      ) : (
+        <FlatList
+          data={meetings}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.Id}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+      )}
+
       {renderAddIcon()}
     </SafeAreaView>
   );

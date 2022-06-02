@@ -35,7 +35,7 @@ const Main = () => {
   const startUp = async () => {
     const user = await fetchLoggedInUser();
     if (user) {
-      setIsUserAdmin(user.Roles.includes("Meeting"));
+      setIsUserAdmin(user.Roles.includes("MeetingAdmin"));
       const isTokenDateValid = isMeetingValidForAttendance(user.ValidTo, new Date());
       if (isTokenDateValid) {
         dispatch(saveLoginData(user));
@@ -62,7 +62,7 @@ const Main = () => {
         new Date()
       );
       if (isTokenDateValid) {
-        setIsUserAdmin(loggedInUser.Roles.includes("Meeting"));
+        setIsUserAdmin(loggedInUser.Roles.includes("MeetingAdmin"));
         setLoggedIn(true);
         return;
       } else {

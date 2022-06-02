@@ -14,7 +14,7 @@ const Tab = createMaterialTopTabNavigator();
 const MeetingView: React.FC = () => (
   <Tab.Navigator
     screenOptions={{
-      tabBarLabelStyle: { fontSize: 18 },
+      tabBarLabelStyle: { fontSize: 16 },
       tabBarStyle: { backgroundColor: SEC_TEXT_COLOR },
       tabBarInactiveTintColor: PRY_COLOR,
       tabBarActiveTintColor: SEC_COLOR,
