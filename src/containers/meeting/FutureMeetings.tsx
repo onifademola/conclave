@@ -6,9 +6,10 @@ import { SafeAreaView,
   TouchableOpacity, 
   RefreshControl
 } from 'react-native';
-import { IconButton, Searchbar } from "react-native-paper";
+import { IconButton, TextInput } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
+import debounce from "lodash.debounce";
 import ItemComponent from './ItemComponent';
 import EmptyList from '../../common/EmptyList';
 import { ApiRoutes } from "../../consumers/api-routes";
@@ -137,7 +138,7 @@ const FutureMeetings = () => {
     );
   };
 
-  const serachData = param => {
+  const serachData = debounce(param => {
      const serachResult = baseMeetings.filter((item) => {
        return (
          item.MeetingName &&
@@ -148,9 +149,10 @@ const FutureMeetings = () => {
        );
      });
      setMeetings(serachResult);
-  }
+  }, 500);
 
   const clearSearch = () => {
+    setSearchItem("");
     setMeetings(baseMeetings);
   }
 
@@ -165,13 +167,31 @@ const FutureMeetings = () => {
           marginBottom: 5,
         }}
       >
-        <Searchbar
+        <TextInput
           placeholder="Search"
-          onChangeText={(value) => {
-            setSearchItem(value);
-            serachData(value);
+          right={<TextInput.Icon name="close" onPress={() => clearSearch()} />}
+          left={<TextInput.Icon name="card-search" />}
+          style={{
+            borderRadius: 3,
+            borderBottomEndRadius: 3,
+            borderBottomStartRadius: 3,
+            borderTopLeftRadius: 3,
+            borderTopRightRadius: 3,
+            backgroundColor: "white",
+            borderColor: "black",
+            borderWidth: 0.5,
+            height: 40,
           }}
-          // value={searchItem}
+          onChangeText={(e) => {
+            if (!e.length) {
+              console.log("this fires")
+              clearSearch();
+              return;
+            }
+            setSearchItem(e);
+            serachData(e);
+          }}
+          value={searchItem}
         />
       </View>
       {!meetings || meetings.length < 1 ? (
@@ -189,15 +209,13 @@ const FutureMeetings = () => {
           }
         />
       )}
-
-      {renderAddIcon()}
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,    
+    flex: 1,
   },
   icon: {
     position: "absolute",
@@ -207,6 +225,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     right: 30,
     bottom: 30,
+  },
+  searchSection: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  searchIcon: {
+    padding: 10,
+  },
+  input: {
+    flex: 1,
+    paddingTop: 10,
+    paddingRight: 10,
+    paddingBottom: 10,
+    paddingLeft: 0,
+    backgroundColor: "#fff",
+    color: "#424242",
   },
 });
 

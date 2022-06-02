@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import { View, StyleSheet, FlatList, SafeAreaView } from 'react-native';
-import { Card, Title as Tit, Text } from "react-native-paper";
+import { Card, Title as Tit, TextInput } from "react-native-paper";
 import { useSelector } from 'react-redux';
+import debounce from "lodash.debounce";
 import { ApiRoutes } from "../../consumers/api-routes";
 import { HttpGet } from "../../consumers/http";
 import BusyComponent from '../../common/BusyComponent';
@@ -39,6 +40,8 @@ const MeetingAttendance = (prop: any) => {
   const [loggedInUser, setLoggedInUser] = useState(appUser);
   const [attendanceList, setAttendanceList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+    const [baseAttendanceList, setBaseAttendanceList] = useState([]);
+    const [searchItem, setSearchItem] = useState("");
 
   const renderItem = ({ item }) => {
     return <AdminAttendanceComponent item={item} />;
@@ -49,6 +52,7 @@ const MeetingAttendance = (prop: any) => {
     const url = `${ApiRoutes.getMeetingAttendance}/${Id}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {
+        setBaseAttendanceList(res.data);
         setAttendanceList(res.data);
         setIsLoading(false);
       })
@@ -110,6 +114,29 @@ const MeetingAttendance = (prop: any) => {
     return "";
   }
 
+  const serachData = debounce((param) => {
+    const serachResult = baseAttendanceList.filter((item) => {
+      return (
+        (item.Email &&
+          item.Email.length &&
+          item.Email.toString().toLowerCase().includes(param.toLowerCase())) ||
+        item.FirstName.toString().toLowerCase().includes(param.toLowerCase()) ||
+        item.LastName.toString().toLowerCase().includes(param.toLowerCase()) ||
+        item.MeetingName.toString()
+          .toLowerCase()
+          .includes(param.toLowerCase()) ||
+        item.DepartmentName.toString().toLowerCase().includes(param.toLowerCase()) ||
+        item.Status.toString().toLowerCase().includes(param.toLowerCase())
+      );
+    });
+    setAttendanceList(serachResult);
+  }, 500);
+
+  const clearSearch = () => {
+    setSearchItem("");
+    setAttendanceList(baseAttendanceList);
+  };
+
   return (
     <View style={styles.container}>
       <View>
@@ -144,8 +171,36 @@ const MeetingAttendance = (prop: any) => {
               }}
             >
               <Tit style={styles.content}>Late after {LateAfter} mins</Tit>
-              <Tit style={styles.content}>{getAttendeesCount()}</Tit>              
+              <Tit style={styles.content}>{getAttendeesCount()}</Tit>
             </View>
+            <TextInput
+              placeholder="Search"
+              right={
+                <TextInput.Icon name="close" onPress={() => clearSearch()} />
+              }
+              left={<TextInput.Icon name="card-search" />}
+              style={{
+                borderRadius: 3,
+                borderBottomEndRadius: 3,
+                borderBottomStartRadius: 3,
+                borderTopLeftRadius: 3,
+                borderTopRightRadius: 3,
+                backgroundColor: "white",
+                borderColor: "black",
+                borderWidth: 0.5,
+                height: 40,
+              }}
+              onChangeText={(e) => {
+                if (!e.length) {
+                  console.log("this fires");
+                  clearSearch();
+                  return;
+                }
+                setSearchItem(e);
+                serachData(e);
+              }}
+              value={searchItem}
+            />
           </Content>
         </Card>
       </View>

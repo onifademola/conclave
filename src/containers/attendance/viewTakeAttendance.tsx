@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
+import { Title as Tit } from "react-native-paper";
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useKeepAwake } from 'expo-keep-awake';
 import { useSelector } from 'react-redux';
+import { useNavigation } from "@react-navigation/native";
+import moment from "moment";
 import BusyComponent from '../../common/BusyComponent';
 import ModalAlertComponent, { ModalType } from '../../common/ModalAlertComponent';
 import { ApiRoutes } from '../../consumers/api-routes';
@@ -12,6 +15,8 @@ import {
   calculatePunctuality,
   isMeetingReadyForAttendance
 } from '../../consumers/DateHelper';
+import { AppButton } from "../../common/AppButton";
+import { SEC_TEXT_COLOR } from "../../styles/colors";
 
 interface Attendance {
   email: string;
@@ -22,6 +27,7 @@ interface Attendance {
 
 const TakeAttendanceView = (prop: any) => {
   const appUser = useSelector(state => state.user.loggedInUser);
+  const { meeting } = prop.route.params;
   const {
     Id,
     MeetingName,
@@ -31,7 +37,8 @@ const TakeAttendanceView = (prop: any) => {
     Done,
     Cancelled,
     LateAfter,
-  } = prop.route.params.meeting;
+  } = meeting;
+  const navigation = useNavigation();
   useKeepAwake();
   const [loggedInUser, setLoggedInUser] = useState(appUser);
   const [hasPermission, setHasPermission] = useState(false);
@@ -147,6 +154,23 @@ const TakeAttendanceView = (prop: any) => {
 
   return (
     <View style={styles.mainContainer}>
+      <View
+        style={{
+          paddingBottom: 10,
+          paddingLeft: "5%",
+          paddingRight: "5%",
+        }}
+      >
+        <Tit style={{ ...styles.content, fontSize: 28 }}>{MeetingName}</Tit>
+        <Tit
+          style={{ ...styles.content, fontSize: 16, fontWeight: "800" }}
+        >{Department} Department || Late after {LateAfter}mins</Tit>        
+        <Tit
+          style={{ ...styles.content, fontSize: 15, fontWeight: "800" }}
+        >{`${moment(StartDate).format("dddd, MMMM DD, YYYY")} || ${moment(
+          StartDate
+        ).format("LT")} - ${moment(EndDate).format("LT")}`}</Tit>        
+      </View>
       <View style={styles.subContainer}>
         <BarCodeScanner
           onTouchEnd={scanned ? undefined : handleBarCodeScanned}
@@ -157,6 +181,19 @@ const TakeAttendanceView = (prop: any) => {
           Tap here to scan if screen goes idle
         </Text>
       </View>
+      <View
+        style={{
+          padding: "5%",
+        }}
+      >
+        <AppButton
+          onPressAction={() =>
+            navigation.navigate("MeetingAttendance", { meeting })
+          }
+          name="btnSubmit"
+          title="Go to attendace list"
+        />
+      </View>
     </View>
   );
   
@@ -165,11 +202,9 @@ const TakeAttendanceView = (prop: any) => {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    padding: 5,
   },
   subContainer: {
     flex: 1,
-    padding: 5,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -178,6 +213,10 @@ const styles = StyleSheet.create({
     color: "yellow",
     padding: 10,
     marginLeft: 5,
+  },
+  content: {
+    color: SEC_TEXT_COLOR,
+    fontSize: 16,
   },
 });
 

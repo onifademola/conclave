@@ -6,9 +6,10 @@ import { SafeAreaView,
   TouchableOpacity, 
   RefreshControl
 } from 'react-native';
-import { IconButton } from 'react-native-paper';
+import { IconButton, TextInput } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
+import debounce from "lodash.debounce";
 import ItemComponent from './ItemComponent';
 import EmptyList from '../../common/EmptyList';
 import { ApiRoutes } from "../../consumers/api-routes";
@@ -35,6 +36,8 @@ const PastMeetings = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [meetings, setMeetings] = useState([]);
+   const [baseMeetings, setBaseMeetings] = useState([]);
+   const [searchItem, setSearchItem] = useState("");
 
   useEffect(() => {
     fetchMeetings();
@@ -51,45 +54,9 @@ const PastMeetings = () => {
             ? 1
             : 0;
         });
+        setBaseMeetings(sortedMeetings);
         setMeetings(sortedMeetings);
         setIsLoading(false);
-      })
-      .catch((err) => {
-        setIsLoading(false);
-      });
-  };
-
-  const UpdateMeeting = async (meeting) => {
-    setIsLoading(true);
-    const { Id } = meeting;
-    const url = `${ApiRoutes.updateMeeting}/${Id}`;
-    await HttpPost(loggedInUser.Token, url, meeting)
-      .then(async (res) => {
-        if (res && res.status === 200) {
-          await fetchMeetings()
-            .then(() => setIsLoading(false))
-            .catch(() => setIsLoading(false));
-        } else {
-          setIsLoading(false);
-        }
-      })
-      .catch((err) => {
-        setIsLoading(false);
-      });
-  };
-
-  const DeleteMeeting = async (meetingId) => {
-    setIsLoading(true);
-    const url = `${ApiRoutes.deleteMeeting}/${meetingId}`;
-    await HttpDelete(loggedInUser.Token, url)
-      .then(async (res) => {
-        if (res && res.status === 200) {
-          await fetchMeetings()
-            .then(() => setIsLoading(false))
-            .catch(() => setIsLoading(false));
-        } else {
-          setIsLoading(false);
-        }
       })
       .catch((err) => {
         setIsLoading(false);
@@ -108,6 +75,7 @@ const PastMeetings = () => {
             ? 1
             : 0;
         });
+        setBaseMeetings(sortedMeetings);
         setMeetings(sortedMeetings);
         setRefreshing(false);
       })
@@ -120,31 +88,83 @@ const PastMeetings = () => {
     return (
       <ItemComponent
         meeting={item}
-        UpdateMeeting={UpdateMeeting}
-        DeleteMeeting={DeleteMeeting}
       />
     );
   };
 
-  if (isLoading) return <BusyComponent />;
+  const serachData = debounce((param) => {
+    const serachResult = baseMeetings.filter((item) => {
+      return (
+        (item.MeetingName &&
+          item.MeetingName.length &&
+          item.MeetingName.toString()
+            .toLowerCase()
+            .includes(param.toLowerCase())) ||
+        item.Detail.toString().toLowerCase().includes(param.toLowerCase()) ||
+        item.Department.toString().toLowerCase().includes(param.toLowerCase())
+      );
+    });
+    setMeetings(serachResult);
+  }, 500);
 
-  if (!meetings || meetings.length < 1)
-    return (
-      <View style={styles.container}>
-        <EmptyList touched={() => fetchMeetings()} />
-      </View>
-    );
+  const clearSearch = () => {
+    setSearchItem("");
+    setMeetings(baseMeetings);
+  };
+
+  if (isLoading) return <BusyComponent />;
 
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: "flex-start" }}>
-      <FlatList
-        data={meetings}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.Id}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      />
+      <View
+        style={{
+          marginLeft: 15,
+          marginRight: 15,
+          marginBottom: 5,
+        }}
+      >
+        <TextInput
+          placeholder="Search"
+          right={<TextInput.Icon name="close" onPress={() => clearSearch()} />}
+          left={<TextInput.Icon name="card-search" />}
+          style={{
+            borderRadius: 3,
+            borderBottomEndRadius: 3,
+            borderBottomStartRadius: 3,
+            borderTopLeftRadius: 3,
+            borderTopRightRadius: 3,
+            backgroundColor: "white",
+            borderColor: "black",
+            borderWidth: 0.5,
+            height: 40,
+          }}
+          onChangeText={(e) => {
+            if (!e.length) {
+              console.log("this fires");
+              clearSearch();
+              return;
+            }
+            setSearchItem(e);
+            serachData(e);
+          }}
+          value={searchItem}
+        />
+      </View>
+      {!meetings || meetings.length < 1 ? (
+        <View style={styles.container}>
+          <EmptyList touched={() => fetchMeetings()} />
+          {renderAddIcon()}
+        </View>
+      ) : (
+        <FlatList
+          data={meetings}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.Id}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+      )}
     </SafeAreaView>
   );
 };
