@@ -1,12 +1,8 @@
 import React from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { IconButton } from "react-native-paper";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
-import { useDispatch } from "react-redux";
 import { Text, View, Image } from "react-native";
-import { reset } from "../redux/user/userSlice";
-import { clearLoggedInUser } from "../consumers/storage";
 import { PRY_COLOR, SEC_COLOR, WHITE, ACCENT } from "../styles/colors";
 import abi from "../../assets/abi.jpg";
 
@@ -21,7 +17,6 @@ const Tab = createBottomTabNavigator();
 
 const commonHeaderStyle = {
   backgroundColor: ACCENT,
-  //headerStatusBarHeight: 30,
 };
 
 const commonHeaderTitleStyle = {
@@ -68,7 +63,7 @@ const ProfileStackScreen = () => {
   return (
     <ProfileStack.Navigator
       screenOptions={() => ({
-        headerShown: true,
+        headerShown: false,
         headerStyle: commonHeaderStyle,
         headerBackTitleStyle: commonHeaderTitleStyle,
       })}
@@ -102,8 +97,6 @@ const RecentStackScreen = () => {
 };
 
 const LogoTitle = () => {
-  const dispatch = useDispatch();
-
   return (
     <View
       style={{
@@ -125,29 +118,12 @@ const LogoTitle = () => {
           style={{
             fontFamily: "RobotoCondensed_300Light",
             color: "white",
-            fontSize: 45,
+            fontSize: 40,
             //fontWeight: "900",
           }}
         >
           Conclave
         </Text>
-      </View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "flex-start",
-          paddingRight: "40%",
-        }}
-      >
-        <IconButton
-          color="white"
-          icon="logout"
-          size={28}
-          onPress={() => {
-            dispatch(reset());
-            clearLoggedInUser();
-          }}
-        />
       </View>
     </View>
   );

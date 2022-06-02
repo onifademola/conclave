@@ -140,7 +140,6 @@ const PastMeetings = () => {
           }}
           onChangeText={(e) => {
             if (!e.length) {
-              console.log("this fires");
               clearSearch();
               return;
             }
