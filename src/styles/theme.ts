@@ -33,7 +33,7 @@ const commonTheme = {
       fontFamily: 'RobotoCondensed_400Regular',
     },
     light: {
-      fontFamily: 'RobotoCondensed_300Light',
+      fontFamily: 'RobotoCondensed_300Light',      
     },
     thin: {
       fontFamily: 'RobotoCondensed_300Light',
@@ -51,7 +51,7 @@ const AppDefaultTheme = {
     background: ACCENT,
     backdrop: BACKGROUND_GRADIENT_COLORS,
     text: TEXT_COLOR,
-  },
+  },  
 };
 
 const AppDarkTheme = {

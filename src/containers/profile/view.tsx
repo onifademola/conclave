@@ -7,6 +7,12 @@ import { clearLoggedInUser } from "../../consumers/storage";
 import { reset } from "../../redux/user/userSlice";
 import { LINEAR_GRADIENT_COLORS } from "../../styles/colors";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import {
+  SMALL_DEVICE,
+  MEDIUM_DEVICE,
+  LARGE_DEVICE,
+  LARGER_DEVICE,
+} from "../../constants/device-dimensions";
 
 const ProfileView = () => {
   const dispatch = useDispatch();
@@ -35,7 +41,13 @@ const ProfileView = () => {
             textAlign: "right",
             fontFamily: "RobotoCondensed_300Light",
             color: "white",
-            fontSize: 25,
+            fontSize: SMALL_DEVICE
+              ? 18
+              : MEDIUM_DEVICE
+              ? 20
+              : LARGE_DEVICE
+              ? 25
+              : 30,
           }}
         >
           Signout

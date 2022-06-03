@@ -10,10 +10,11 @@ import {
 } from "../../styles/colors";
 import { ExtractInitials } from "../../consumers/Utils";
 import { ApiRoutes } from "../../consumers/api-routes";
+import { SMALL_DEVICE, MEDIUM_DEVICE, LARGE_DEVICE, LARGER_DEVICE } from "../../constants/device-dimensions";
 
 const renderAvatar = (uri: string) => (
   <Avatar.Image
-    size={120}
+    size={SMALL_DEVICE ? 70 : LARGE_DEVICE ? 100 : LARGER_DEVICE ? 120 : 80}
     style={{ backgroundColor: SEC_COLOR }}
     source={{ uri }}
   />
@@ -21,7 +22,7 @@ const renderAvatar = (uri: string) => (
 
 const renderAvatarText = ({ Username }) => (
   <Avatar.Text
-    size={120}
+    size={SMALL_DEVICE ? 50 : LARGE_DEVICE ? 100 : LARGER_DEVICE ? 120 : 80}
     label={ExtractInitials(Username)}
     color={PRY_COLOR}
     labelStyle={{ fontSize: 60 }}
@@ -29,22 +30,65 @@ const renderAvatarText = ({ Username }) => (
   />
 );
 
+const renderDetail1 = ({ DepartmentName, Username, SiteName }) => {
+  return (
+    <View
+      style={{
+        flexDirection: "column",
+        justifyContent: "flex-start",
+        paddingTop: 5,
+      }}
+    >
+      {/* <Ionicons
+        name="ios-information-circle-sharp"
+        size={65}
+        color={SEC_TEXT_COLOR}
+      /> */}
+      <View
+        style={{
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          paddingLeft: 5,
+          alignItems: "flex-start",
+        }}
+      >
+        <View style={{ flexDirection: "row" }}>
+          <Text style={{ flexWrap: "wrap", ...styles.text }}>
+            <Ionicons name="ios-mail-sharp" size={18} color={SEC_TEXT_COLOR} />
+            {Username}
+          </Text>
+        </View>
+        <Text style={styles.text}>
+          <Ionicons name="ios-people" size={18} color={SEC_TEXT_COLOR} />
+          {DepartmentName.toLocaleUpperCase()}
+        </Text>
+        <Text style={styles.text}>
+          <Ionicons name="ios-home-sharp" size={18} color={SEC_TEXT_COLOR} />
+          {SiteName}
+        </Text>
+      </View>
+    </View>
+  );
+};
+
 const renderDetail = ({ DepartmentName, Username, SiteName }) => {
   return (
     <View
       style={{
         flexDirection: "column",
-        justifyContent: "flex-end",
+        justifyContent: "flex-start",
         paddingTop: 5,
         paddingLeft: 5,
         alignItems: "flex-end",
       }}
     >
-      <Ionicons
-        name="ios-information-circle-sharp"
-        size={65}
-        color={SEC_TEXT_COLOR}
-      />
+      {SMALL_DEVICE ? null : (
+        <Ionicons
+          name="ios-information-circle-sharp"
+          size={SMALL_DEVICE ? 18 : MEDIUM_DEVICE ? 45 : LARGE_DEVICE ? 60 : 80}
+          color={SEC_TEXT_COLOR}
+        />
+      )}
       <View
         style={{
           flexDirection: "column",
@@ -103,9 +147,11 @@ const ProfileContent = ({ user }) => {
         <>
           <View style={styles.subContainer}>
             {imageIsValid ? renderAvatar(imageUri) : renderAvatarText(user)}
-            {renderDetail(user)}
           </View>
-          <Headline style={styles.profileName}>{getName()}</Headline>
+          {renderDetail(user)}
+          {SMALL_DEVICE ? null : (
+            <Headline style={styles.profileName}>{getName()}</Headline>
+          )}
         </>
       )}
     </View>
@@ -120,20 +166,21 @@ const styles = StyleSheet.create({
     borderTopRightRadius: radiusRate,
     backgroundColor: ACCENT,
     justifyContent: "flex-start",
-    paddingRight: "10%",
+    paddingRight: "5%",
     paddingLeft: "5%",
+    marginTop: "15%",
   },
   subContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     alignItems: "flex-start",
+    //width: "70%",
   },
   profileName: {
-    fontSize: 28,
+    fontSize: SMALL_DEVICE ? 20 : MEDIUM_DEVICE ? 24 : LARGE_DEVICE ? 28 : 20,
     color: PRY_COLOR,
     paddingLeft: 20,
-    paddingTop: 40,
-    alignItems: "flex-end",
+    alignItems: "flex-start",
     textAlign: "right",
   },
   text: {

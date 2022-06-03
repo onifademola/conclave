@@ -195,8 +195,7 @@ const FutureMeetings = () => {
       </View>
       {!meetings || meetings.length < 1 ? (
         <View style={styles.container}>
-          <EmptyList touched={() => fetchMeetings()} />
-          {renderAddIcon()}
+          <EmptyList touched={() => fetchMeetings()} />          
         </View>
       ) : (
         <FlatList
@@ -208,6 +207,7 @@ const FutureMeetings = () => {
           }
         />
       )}
+      {renderAddIcon()}
     </SafeAreaView>
   );
 };

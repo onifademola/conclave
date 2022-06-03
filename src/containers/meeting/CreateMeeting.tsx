@@ -13,6 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { useSelector } from "react-redux";
 import ModalSelector from "react-native-modal-selector";
+import Toast from "react-native-simple-toast";
 import { ApiRoutes } from "../../consumers/api-routes";
 import { HttpGet, HttpPost } from "../../consumers/http";
 import {
@@ -105,19 +106,22 @@ const CreateMeeting: React.FC = () => {
     setIsLoading(true);
     await HttpPost(loggedInUser.Token, ApiRoutes.createMeeting, meeting)
       .then((res) => {
-        if (res && res.status === 200) {
-          setIsLoading(false);
-          Toast.showWithGravity("Meeting created.", Toast.LONG, Toast.TOP);
-          navigation.goBack();
-        } else {
-          setIsLoading(false);
-          setCreateFailed(true);
-          Toast.showWithGravity(
-            "Meeting not created. Please try again.",
-            Toast.LONG,
-            Toast.TOP
-          );
-        }
+        setIsLoading(false);
+        Toast.showWithGravity("Meeting created.", Toast.LONG, Toast.TOP);
+        navigation.goBack();
+        // if (res.data || res.status === 200) {
+        //   setIsLoading(false);
+        //   Toast.showWithGravity("Meeting created.", Toast.LONG, Toast.TOP);
+        //   navigation.goBack();
+        // } else {
+        //   setIsLoading(false);
+        //   setCreateFailed(true);
+        //   Toast.showWithGravity(
+        //     "Meeting not created. Please try again.",
+        //     Toast.LONG,
+        //     Toast.TOP
+        //   );
+        // }
       })
       .catch(() => {
         setIsLoading(false);
@@ -149,10 +153,10 @@ const CreateMeeting: React.FC = () => {
   };
 
   const createRecurringDatesForWeekDays = () => {
-    if (recurringFor < 1) return null;
+    if (parseInt(recurringFor, 10) < 1) return null;
     if (!moment(meetingDate).isValid) return null;
     const recurringResult = [];
-    for (let i = 0; i < recurringFor; i++) {
+    for (let i = 0; i < parseInt(recurringFor, 10); i++) {
       const currentDate = moment(meetingDate).add(i, "day");
       const currentDateWeekDay = moment(currentDate).format("ddd");
       const isCurrentDateWeekDay =
@@ -176,7 +180,7 @@ const CreateMeeting: React.FC = () => {
   };
 
   const createRecurringDatesForSpecificDays = () => {
-    if (recurringFor < 1) return null;
+    if (parseInt(recurringFor, 10) < 1) return null;
     if (!moment(meetingDate).isValid) return null;
     const selectedDays = [];
     WeekDays.forEach((day) => {
@@ -190,10 +194,10 @@ const CreateMeeting: React.FC = () => {
     let recurringResult: any[] = [];
     selectedDays.forEach((day) => {
       const localrecurringDates = [];
-      for (let i = 0; i < recurringFor; i++) {
+      for (let i = 0; i < parseInt(recurringFor, 10); i++) {
         const currentDate = moment(meetingDate).add(i, "day");
         const currentDateWeekDay = moment(currentDate).format("ddd");
-        
+
         if (currentDateWeekDay === day) {
           const currentStartDate = convertedDateCombinationToISO(
             currentDate,
@@ -222,7 +226,7 @@ const CreateMeeting: React.FC = () => {
   const resetStates = () => {
     setRecurring(false);
     setRecurringType(OccurrenceType.EVERYDAY);
-    setRecurringFor(30);
+    setRecurringFor("30");
     setSelectedWeekDays(SelectedDays);
   }
 
@@ -489,6 +493,7 @@ const CreateMeeting: React.FC = () => {
             departmentId,
             recurringDates: sortedRecurDates,
           };
+          console.log(finalValues);
           await saveMeeting(finalValues);
         }}
       >

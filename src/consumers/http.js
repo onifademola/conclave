@@ -7,6 +7,7 @@ const baseUri = prodUrl;
 
 const apiCall = async (token, method, uri, data = null) => {
   return axios({
+    // timeout: 6000,
     method,
     url: `${baseUri}/${uri}`,
     data,

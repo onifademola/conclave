@@ -2,7 +2,7 @@ import React from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
-import { Text, View, Image } from "react-native";
+import { Text, View, Image, StyleSheet } from "react-native";
 import { PRY_COLOR, SEC_COLOR, WHITE, ACCENT } from "../styles/colors";
 import abi from "../../assets/abi.jpg";
 
@@ -12,6 +12,7 @@ import MyAttendancesContainer from "../containers/myAttendances/index";
 import CreateMeeting from "../containers/meeting/CreateMeeting";
 import TakeAttendanceView from "../containers/attendance/viewTakeAttendance";
 import MeetingAttendance from "../containers/meeting/MeetingAttendance";
+import { SMALL_DEVICE, MEDIUM_DEVICE, LARGE_DEVICE } from "../constants/device-dimensions";
 
 const Tab = createBottomTabNavigator();
 
@@ -113,12 +114,19 @@ const LogoTitle = () => {
           alignItems: "center",
         }}
       >
-        <Image style={{ maxWidth: 40, maxHeight: 30 }} source={abi} />
+        <Image style={styles.imageStyle} source={abi} />
         <Text
           style={{
             fontFamily: "RobotoCondensed_300Light",
             color: "white",
-            fontSize: 40,
+            fontSize: SMALL_DEVICE
+              ? 20
+              : MEDIUM_DEVICE
+              ? 30
+              : LARGE_DEVICE
+              ? 30
+              : 40,
+            // fontSize: {SMALL_DEVICE ? 20 : MEDIUM_DEVICE ? 40 : LARGE_DEVICE ? 50 : 30},
             //fontWeight: "900",
           }}
         >
@@ -200,3 +208,28 @@ const AppNavigator = ({ isUserAdmin }) => {
 };
 
 export default AppNavigator;
+
+const bigDeviceImage = {
+  maxWidth: 40,
+  maxHeight: 40,
+};
+
+const smallDeviceImage = {
+  maxWidth: 30,
+  maxHeight: 30,
+};
+
+const medimumDeviceImage = {
+  maxWidth: 35,
+  maxHeight: 35,
+};
+
+const styles = StyleSheet.create({
+  imageStyle: SMALL_DEVICE
+    ? smallDeviceImage
+    : MEDIUM_DEVICE
+    ? medimumDeviceImage
+    : LARGE_DEVICE
+    ? bigDeviceImage
+    : medimumDeviceImage,
+});
