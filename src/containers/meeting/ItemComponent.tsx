@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Alert, Text } from "react-native";
-import { Card, IconButton, Title as Tit, Paragraph } from "react-native-paper";
+import {
+  Card,
+  IconButton,
+  Title as Tit,
+  Paragraph,
+} from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
 import * as FileSystem from "expo-file-system";
@@ -19,7 +24,8 @@ import { isMeetingValidForAttendance } from "../../consumers/DateHelper";
 const { Title, Content } = Card;
 
 const ItemComponent = (prop) => {
-  const { UpdateMeeting, DeleteMeeting, meeting } = prop;
+  const { UpdateMeeting, DeleteMeeting, meeting, renderModal } =
+    prop;
 
   if (!meeting) return null;
   const navigation = useNavigation();
@@ -57,19 +63,7 @@ const ItemComponent = (prop) => {
           text: "CANCEL",
           onPress: async () => {
             setIsPageLoading(true);
-            const cancellingMeeting = {
-              Cancelled: true,
-              Id: Id,
-              MeetingName: MeetingName,
-              Detail: Detail,
-              StartDate: StartDate,
-              EndDate: EndDate,
-              DepartmentId: DepartmentId,
-              SiteId: SiteId,
-              CreatedBy: CreatedBy,
-              Done: Done,
-              LateAfter: LateAfter,
-            };
+            const cancellingMeeting = { ...meeting, Cancelled: true };
             await UpdateMeeting(cancellingMeeting)
               .then((res) => {
                 setIsPageLoading(false);
@@ -176,14 +170,19 @@ const ItemComponent = (prop) => {
           )}
           right={(props) => (
             <View style={{ flexDirection: "row" }}>
-              <IconButton
-                {...props}
-                color={SEC_TEXT_COLOR}
-                icon="delete-clock"
-                size={iconSize}
-                onPress={() => deleteAlert()}
-                disabled={Done || Cancelled}
-              />
+              {Done || Cancelled ? null : (
+                <IconButton
+                  {...props}
+                  color={SEC_TEXT_COLOR}
+                  icon="delete-clock"
+                  size={iconSize}
+                  // onPress={() =>
+                  //   RecurringId ? renderModal(meeting) : deleteAlert()
+                  // }
+                  onPress={() => renderModal(meeting)}
+                  disabled={Done || Cancelled}
+                />
+              )}
               <Animatable.View
                 animation={animation}
                 iterationCount={10}
@@ -221,7 +220,7 @@ const ItemComponent = (prop) => {
                 {MeetingName}
               </Tit>
               {RecurringId && RecurringId.length ? (
-                <Text  style={{ fontSize: 10, padding: 0, fontWeight: "bold" }}>
+                <Text style={{ fontSize: 10, padding: 0, fontWeight: "bold" }}>
                   RECURRING MEETING
                 </Text>
               ) : null}

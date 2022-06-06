@@ -38,7 +38,6 @@ export const AppButtonSmall = (props: buttonProps) => {
     <TouchableOpacity onPress={() => onPressAction()}>
       <Button
         name={name}
-        icon={icon}
         mode="contained"
         style={styles.smallButton}
         labelStyle={styles.smallText}

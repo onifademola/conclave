@@ -493,7 +493,6 @@ const CreateMeeting: React.FC = () => {
             departmentId,
             recurringDates: sortedRecurDates,
           };
-          console.log(finalValues);
           await saveMeeting(finalValues);
         }}
       >
