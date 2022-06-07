@@ -31,8 +31,8 @@ export const calculatePunctuality = (
   attendeeArrivalTime,
   meetingLatenessThreshold) => {
     const latenessThreshold = moment(meetingStartDateTime).add(meetingLatenessThreshold, 'minutes');
-    const isLate = moment(attendeeArrivalTime).diff(latenessThreshold);
-    if (parseInt(isLate, 10) > 0) { //then attendee is late
+    const isLate = moment(attendeeArrivalTime).diff(latenessThreshold, 'minutes');    
+    if (parseInt(isLate, 10) >= 1) { //then attendee is late
       const timeDiffinMins = moment
         .utc(
           moment(attendeeArrivalTime, "DD/MM/YYYY HH:mm:ss").diff(
@@ -43,7 +43,13 @@ export const calculatePunctuality = (
       const minTime = timeDiffinMins.format("mm");
       const hrTimeInt = parseInt(hrTime, 10);
       const minTimeInt = parseInt(minTime, 10);
-      return `Late by ${hrTimeInt > 0 ? `${hrTimeInt}hr ${minTimeInt}min(s)` : `${minTimeInt}min(s)`}`;
+      return `Late by ${
+        hrTimeInt > 0
+          ? `${hrTimeInt}hr ${
+              minTimeInt > 1 ? `${minTimeInt}mins` : `${minTimeInt}min`
+            }`
+          : `${minTimeInt > 1 ? `${minTimeInt}mins` : `${minTimeInt}min`}`
+      }`;
     } else {
       return "Punctual";
     }

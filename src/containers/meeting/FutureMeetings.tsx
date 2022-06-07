@@ -1,21 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { SafeAreaView, 
-  View, 
-  FlatList, 
-  StyleSheet, 
-  TouchableOpacity, 
-  RefreshControl, Text
-} from 'react-native';
+import React, { useState, useEffect } from "react";
+import {
+  SafeAreaView,
+  View,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  RefreshControl,
+  Text,
+} from "react-native";
 import { IconButton, TextInput, Modal } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import debounce from "lodash.debounce";
-import ItemComponent from './ItemComponent';
-import EmptyList from '../../common/EmptyList';
+import moment from "moment";
+import ItemComponent from "./ItemComponent";
+import EmptyList from "../../common/EmptyList";
 import { ApiRoutes } from "../../consumers/api-routes";
 import { HttpGet, HttpDelete, HttpPost } from "../../consumers/http";
-import BusyComponent from '../../common/BusyComponent';
-import ModalDialog from '../../common/ModalDialog';
+import BusyComponent from "../../common/BusyComponent";
+import ModalDialog from "../../common/ModalDialog";
 
 const FutureMeetings = () => {
   const appUser = useSelector((state) => state.user.loggedInUser);
@@ -50,7 +53,10 @@ const FutureMeetings = () => {
     const url = `${ApiRoutes.getFutureMeetings}/${loggedInUser.SiteId}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {
-        const sortedMeetings = res.data.sort((a: any, b: any) => {
+        const filteredList = res.data.filter((f) => {
+          return moment(f.StartDate).isAfter(moment());
+        });
+        const sortedMeetings = filteredList.sort((a: any, b: any) => {
           return a.StartDate < b.StartDate
             ? -1
             : a.StartDate > b.StartDate
@@ -153,23 +159,25 @@ const FutureMeetings = () => {
     );
   };
 
-  const serachData = debounce(param => {
-     const serachResult = baseMeetings.filter((item) => {
-       return (
-         item.MeetingName &&
-         item.MeetingName.length &&
-         item.MeetingName.toString().toLowerCase().includes(param.toLowerCase())
-         || item.Detail.toString().toLowerCase().includes(param.toLowerCase())
-         || item.Department.toString().toLowerCase().includes(param.toLowerCase())
-       );
-     });
-     setMeetings(serachResult);
+  const serachData = debounce((param) => {
+    const serachResult = baseMeetings.filter((item) => {
+      return (
+        (item.MeetingName &&
+          item.MeetingName.length &&
+          item.MeetingName.toString()
+            .toLowerCase()
+            .includes(param.toLowerCase())) ||
+        item.Detail.toString().toLowerCase().includes(param.toLowerCase()) ||
+        item.Department.toString().toLowerCase().includes(param.toLowerCase())
+      );
+    });
+    setMeetings(serachResult);
   }, 500);
 
   const clearSearch = () => {
     setSearchItem("");
     setMeetings(baseMeetings);
-  }
+  };
 
   // if (isLoading) return <BusyComponent />;
 
