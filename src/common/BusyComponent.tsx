@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import { fontSize } from '../styles/fonts';
 import * as Animatable from "react-native-animatable";
+import { ACCENT } from "../styles/colors";
 
 const activities = [
   "...we are sorting that, please wait.",
@@ -53,6 +54,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     alignitems: "center",
+    backgroundColor: ACCENT,
   },
   title: {
     textAlign: "center",
