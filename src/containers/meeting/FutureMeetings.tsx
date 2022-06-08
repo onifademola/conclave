@@ -6,10 +6,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   RefreshControl,
-  Modal as NativeModal,
+  Modal,
 } from "react-native";
-import { IconButton, TextInput, Modal } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native";
+import { IconButton, TextInput } from "react-native-paper";
 import { useSelector } from "react-redux";
 import debounce from "lodash.debounce";
 import moment from "moment";
@@ -20,6 +19,7 @@ import { HttpGet, HttpDelete, HttpPost } from "../../consumers/http";
 import BusyComponent from "../../common/BusyComponent";
 import ModalDialog from "../../common/ModalDialog";
 import CreateMeeting from "./CreateMeeting";
+import { ACCENT } from "../../styles/colors";
 
 const FutureMeetings = () => {
   const appUser = useSelector((state) => state.user.loggedInUser);
@@ -44,14 +44,12 @@ const FutureMeetings = () => {
   };
 
   const renderAddIcon = () => {
-    const navigation = useNavigation();
     return (
       <TouchableOpacity activeOpacity={0.7} style={styles.icon}>
         <IconButton
           color="white"
           icon="plus-circle"
           size={70}
-          // onPress={() => navigation.navigate("CreateMeeting", { fetchMeetings })}
           onPress={() => setModalVisible(true)}
         />
       </TouchableOpacity>
@@ -232,14 +230,14 @@ const FutureMeetings = () => {
               />
             )}
             {modalVisible && (
-              <NativeModal visible={modalVisible}>
+              <Modal visible={modalVisible} style={{ backgroundColor: ACCENT }}>
                 <CreateMeeting
                   loggedInUser={loggedInUser}
                   departments={departments}
                   toggleModal={toggleModal}
                   fetchMeetings={fetchMeetings}
                 />
-              </NativeModal>
+              </Modal>
             )}
             <TextInput
               placeholder="Search"

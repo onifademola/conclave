@@ -393,7 +393,7 @@ const CreateMeeting: React.FC = (props) => {
   }
 
   return (
-    <ScrollView>
+    <ScrollView style={{ backgroundColor: ACCENT }}>
       <Formik
         initialValues={{
           siteId: loggedInUser.SiteId,
@@ -447,6 +447,28 @@ const CreateMeeting: React.FC = (props) => {
       >
         {({ handleChange, handleBlur, handleSubmit, values }) => (
           <View style={styles.container}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                alignItems: "flex-end",
+              }}
+            >
+              <View style={{ flex: 1, width: "70%" }}>
+                <Text style={{ fontSize: 12 }}>CREATE A NEW MEETING</Text>
+              </View>
+              <View
+                style={{
+                  flex: 2,
+                  justifyContent: "flex-start",
+                  alignItems: "flex-end",
+                }}
+              >
+                <TouchableOpacity onPress={() => toggleModal()}>
+                  <Text>CANCEL</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
             <Text
               style={{
                 textAlign: "center",
