@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, Switch } from 'react-native';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  TouchableOpacity,
+  Switch,
+} from "react-native";
 import Toast from "react-native-simple-toast";
 import { PRY_COLOR, ACCENT, SEC_COLOR, TEXT_COLOR } from "../styles/colors";
-import TinyBusyComponent from './TinyBusyComponent';
+import TinyBusyComponent from "./TinyBusyComponent";
 
 const textColor = PRY_COLOR;
 
-const ModalDialog = ({ resetModal, onPressCancel, onPressDelete, meeting } ) => {
+const ModalDialog = ({ resetModal, onPressCancel, onPressDelete, meeting }) => {
   const [modalVisible, setModalVisible] = useState(true);
   const [deleteRecurring, setDeleteRecurring] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
@@ -28,7 +35,7 @@ const ModalDialog = ({ resetModal, onPressCancel, onPressDelete, meeting } ) => 
         await resetModal();
       });
   };
-  
+
   const deleteMeeting = async () => {
     setIsBusy(true);
     await onPressDelete(meeting, deleteRecurring)
@@ -45,7 +52,7 @@ const ModalDialog = ({ resetModal, onPressCancel, onPressDelete, meeting } ) => 
         await resetModal();
       });
   };
-  
+
   return (
     <Modal transparent visible={modalVisible}>
       <View style={styles.centeredView}>

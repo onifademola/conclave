@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   RefreshControl,
-  Text,
+  Modal as NativeModal,
 } from "react-native";
 import { IconButton, TextInput, Modal } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
@@ -19,6 +19,7 @@ import { ApiRoutes } from "../../consumers/api-routes";
 import { HttpGet, HttpDelete, HttpPost } from "../../consumers/http";
 import BusyComponent from "../../common/BusyComponent";
 import ModalDialog from "../../common/ModalDialog";
+import CreateMeeting from "./CreateMeeting";
 
 const FutureMeetings = () => {
   const appUser = useSelector((state) => state.user.loggedInUser);
@@ -30,10 +31,17 @@ const FutureMeetings = () => {
   const [baseMeetings, setBaseMeetings] = useState([]);
   const [searchItem, setSearchItem] = useState("");
   const [passedMeeting, setPassedMeeting] = useState({});
+  const [modalVisible, setModalVisible] = useState(false);
+  const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
+    fetchDepartments();
     fetchMeetings();
   }, []);
+
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
 
   const renderAddIcon = () => {
     const navigation = useNavigation();
@@ -43,7 +51,8 @@ const FutureMeetings = () => {
           color="white"
           icon="plus-circle"
           size={70}
-          onPress={() => navigation.navigate("CreateMeeting")}
+          // onPress={() => navigation.navigate("CreateMeeting", { fetchMeetings })}
+          onPress={() => setModalVisible(true)}
         />
       </TouchableOpacity>
     );
@@ -70,6 +79,23 @@ const FutureMeetings = () => {
       .catch((err) => {
         setIsLoading(false);
       });
+  };
+
+  const fetchDepartments = async () => {
+    await HttpGet(loggedInUser.Token, ApiRoutes.getDepartments)
+      .then((res) => {
+        const result = res.data.map((item) => ({
+          key: item.id,
+          label: item.name,
+        }));
+        setDepartments(
+          result.sort((a: any, b: any) => {
+            return a.label < b.label ? -1 : a.label > b.label ? 1 : 0;
+          })
+        );
+        setIsLoading(false);
+      })
+      .catch((err) => {});
   };
 
   const UpdateMeeting = async (meeting, reoccurence) => {
@@ -122,7 +148,10 @@ const FutureMeetings = () => {
           setRefreshing(false);
           return;
         }
-        const sortedMeetings = res.data.sort((a: any, b: any) => {
+        const filteredList = res.data.filter((f) => {
+          return moment(f.StartDate).isAfter(moment());
+        });
+        const sortedMeetings = filteredList.sort((a: any, b: any) => {
           return a.StartDate < b.StartDate
             ? -1
             : a.StartDate > b.StartDate
@@ -201,6 +230,16 @@ const FutureMeetings = () => {
                 onPressDelete={DeleteMeeting}
                 meeting={passedMeeting}
               />
+            )}
+            {modalVisible && (
+              <NativeModal visible={modalVisible}>
+                <CreateMeeting
+                  loggedInUser={loggedInUser}
+                  departments={departments}
+                  toggleModal={toggleModal}
+                  fetchMeetings={fetchMeetings}
+                />
+              </NativeModal>
             )}
             <TextInput
               placeholder="Search"

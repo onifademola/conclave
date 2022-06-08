@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -9,13 +9,11 @@ import {
 import { Formik } from "formik";
 import { Checkbox, IconButton, RadioButton } from "react-native-paper";
 import moment from "moment";
-import { useNavigation } from "@react-navigation/native";
 import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
-import { useSelector } from "react-redux";
 import ModalSelector from "react-native-modal-selector";
 import Toast from "react-native-simple-toast";
 import { ApiRoutes } from "../../consumers/api-routes";
-import { HttpGet, HttpPost } from "../../consumers/http";
+import { HttpPost } from "../../consumers/http";
 import {
   convertedDateCombinationToISO,
   convertToHourMinute,
@@ -50,57 +48,20 @@ const SelectedDays = {
 
 const WeekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const CreateMeeting: React.FC = () => {
-  const appUser = useSelector((state) => state.user.loggedInUser);
-  const navigation = useNavigation();
-  const [loggedInUser, setLoggedInUser] = useState(appUser);
-  const [isLoading, setIsLoading] = useState(true);
+const CreateMeeting: React.FC = (props) => {
+  const { loggedInUser, departments, toggleModal, fetchMeetings } = props;
+  const [isLoading, setIsLoading] = useState(false);
   const [meetingDate, setMeetingDate] = useState(new Date());
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(moment(new Date()).add(30, "minutes"));
   const [showMode, setShowMode] = useState(false);
   const [departmentId, setDepartmentId] = useState(0);
   const [departmentName, setDepartmentName] = useState("");
-  const [departments, setDepartments] = useState([]);
   const [createFailed, setCreateFailed] = useState(false);
   const [recurring, setRecurring] = useState(false);
   const [recurringType, setRecurringType] = useState(OccurrenceType.EVERYDAY);
   const [recurringFor, setRecurringFor] = useState("30");
   const [selectedWeekDays, setSelectedWeekDays] = useState(SelectedDays);
-  
-  useEffect(() => {
-    let mounted = true;
-
-    if (mounted) {
-      fetchDepartments();
-    }
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  const fetchDepartments = async () => {
-    setIsLoading(true);
-    await HttpGet(loggedInUser.Token, ApiRoutes.getDepartments)
-      .then((res) => {
-        const result = res.data.map((item) => ({
-          key: item.id,
-          label: item.name,
-        }));
-        setDepartments(result.sort((a: any, b: any) => {
-          return a.label < b.label
-            ? -1
-            : a.label > b.label
-            ? 1
-            : 0;
-        }));
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        setIsLoading(false);
-      });
-  };
 
   const saveMeeting = async (meeting) => {
     setIsLoading(true);
@@ -108,20 +69,8 @@ const CreateMeeting: React.FC = () => {
       .then((res) => {
         setIsLoading(false);
         Toast.showWithGravity("Meeting created.", Toast.LONG, Toast.TOP);
-        navigation.goBack();
-        // if (res.data || res.status === 200) {
-        //   setIsLoading(false);
-        //   Toast.showWithGravity("Meeting created.", Toast.LONG, Toast.TOP);
-        //   navigation.goBack();
-        // } else {
-        //   setIsLoading(false);
-        //   setCreateFailed(true);
-        //   Toast.showWithGravity(
-        //     "Meeting not created. Please try again.",
-        //     Toast.LONG,
-        //     Toast.TOP
-        //   );
-        // }
+        fetchMeetings();
+        toggleModal();
       })
       .catch(() => {
         setIsLoading(false);
@@ -188,9 +137,9 @@ const CreateMeeting: React.FC = () => {
         selectedDays.push(day);
       }
     });
-    
+
     if (!selectedDays) return;
-    
+
     let recurringResult: any[] = [];
     selectedDays.forEach((day) => {
       const localrecurringDates = [];
@@ -214,7 +163,7 @@ const CreateMeeting: React.FC = () => {
         }
       }
       const prevReults = [...recurringResult];
-      recurringResult = [...prevReults, ...localrecurringDates];      
+      recurringResult = [...prevReults, ...localrecurringDates];
     });
     return recurringResult;
   };
@@ -228,7 +177,7 @@ const CreateMeeting: React.FC = () => {
     setRecurringType(OccurrenceType.EVERYDAY);
     setRecurringFor("30");
     setSelectedWeekDays(SelectedDays);
-  }
+  };
 
   const startDateAndroidPickerShowMode = (mode) => {
     DateTimePickerAndroid.open({
