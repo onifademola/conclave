@@ -21,23 +21,18 @@ import ModalDialog from "../../common/ModalDialog";
 import CreateMeeting from "./CreateMeeting";
 import { ACCENT } from "../../styles/colors";
 
-const FutureMeetings = () => {
+const FutureMeetings = (props) => {
+  const { meetingsList, departments, reloadData } = props;
   const appUser = useSelector((state) => state.user.loggedInUser);
   const [loggedInUser, setLoggedInUser] = useState(appUser);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalRendering, setIsModalRendering] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [meetings, setMeetings] = useState([]);
-  const [baseMeetings, setBaseMeetings] = useState([]);
+  const [meetings, setMeetings] = useState(meetingsList);
+  const [baseMeetings, setBaseMeetings] = useState(meetingsList);
   const [searchItem, setSearchItem] = useState("");
   const [passedMeeting, setPassedMeeting] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
-  const [departments, setDepartments] = useState([]);
-
-  useEffect(() => {
-    fetchDepartments();
-    fetchMeetings();
-  }, []);
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
@@ -79,23 +74,6 @@ const FutureMeetings = () => {
       });
   };
 
-  const fetchDepartments = async () => {
-    await HttpGet(loggedInUser.Token, ApiRoutes.getDepartments)
-      .then((res) => {
-        const result = res.data.map((item) => ({
-          key: item.id,
-          label: item.name,
-        }));
-        setDepartments(
-          result.sort((a: any, b: any) => {
-            return a.label < b.label ? -1 : a.label > b.label ? 1 : 0;
-          })
-        );
-        setIsLoading(false);
-      })
-      .catch((err) => {});
-  };
-
   const UpdateMeeting = async (meeting, reoccurence) => {
     // setIsLoading(true);
     const { Id, RecurringId } = meeting;
@@ -104,7 +82,7 @@ const FutureMeetings = () => {
     await HttpPost(loggedInUser.Token, url, meeting)
       .then(async (res) => {
         if (res && res.status === 200) {
-          await fetchMeetings()
+          await reloadData()
             .then((res) => res)
             .catch(() => "An error occured.");
         } else {
@@ -123,7 +101,7 @@ const FutureMeetings = () => {
     await HttpDelete(loggedInUser.Token, url)
       .then(async (res) => {
         if (res && res.status === 200) {
-          await fetchMeetings()
+          await reloadData()
             .then((res) => res)
             .catch(() => "An error occured.");
         } else {
@@ -137,35 +115,53 @@ const FutureMeetings = () => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    const url = `${ApiRoutes.getFutureMeetings}/${loggedInUser.SiteId}`;
-    await HttpGet(loggedInUser.Token, url)
-      .then((res) => {
-        if (res && !res.data) {
-          setBaseMeetings([]);
-          setMeetings([]);
-          setRefreshing(false);
-          return;
-        }
-        const filteredList = res.data.filter((f) => {
-          return moment(f.StartDate).isAfter(moment());
-        });
-        const sortedMeetings = filteredList.sort((a: any, b: any) => {
-          return a.StartDate < b.StartDate
-            ? -1
-            : a.StartDate > b.StartDate
-            ? 1
-            : 0;
-        });
-        setBaseMeetings(sortedMeetings);
-        setMeetings(sortedMeetings);
-        setRefreshing(false);
-      })
-      .catch((err) => {
-        setBaseMeetings([]);
-        setMeetings([]);
-        setRefreshing(false);
-      });
+    await reloadData()
+      .then((res) => 
+        setRefreshing(false))
+      .catch((err) => 
+        setRefreshing(false));
   };
+  
+  const onRefetch = async () => {
+    setRefreshing(true);
+    await reloadData()
+      .then((res) => 
+        setRefreshing(false))
+      .catch((err) => 
+        setRefreshing(false));
+  };
+
+  // const onRefresh = async () => {
+  //   setRefreshing(true);
+  //   const url = `${ApiRoutes.getFutureMeetings}/${loggedInUser.SiteId}`;
+  //   await HttpGet(loggedInUser.Token, url)
+  //     .then((res) => {
+  //       if (res && !res.data) {
+  //         setBaseMeetings([]);
+  //         setMeetings([]);
+  //         setRefreshing(false);
+  //         return;
+  //       }
+  //       const filteredList = res.data.filter((f) => {
+  //         return moment(f.StartDate).isAfter(moment());
+  //       });
+  //       const sortedMeetings = filteredList.sort((a: any, b: any) => {
+  //         return a.StartDate < b.StartDate
+  //           ? -1
+  //           : a.StartDate > b.StartDate
+  //           ? 1
+  //           : 0;
+  //       });
+  //       setBaseMeetings(sortedMeetings);
+  //       setMeetings(sortedMeetings);
+  //       setRefreshing(false);
+  //     })
+  //     .catch((err) => {
+  //       setBaseMeetings([]);
+  //       setMeetings([]);
+  //       setRefreshing(false);
+  //     });
+  // };
 
   const renderModal = (meeting) => {
     setPassedMeeting(meeting);
@@ -210,81 +206,81 @@ const FutureMeetings = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: "flex-start" }}>
-      {isLoading ? (
-        <BusyComponent />
-      ) : (
-        <>
-          <View
-            style={{
-              marginLeft: 15,
-              marginRight: 15,
-              marginBottom: 5,
-            }}
-          >
-            {isModalRendering && (
-              <ModalDialog
-                resetModal={resetModal}
-                onPressCancel={UpdateMeeting}
-                onPressDelete={DeleteMeeting}
-                meeting={passedMeeting}
-              />
-            )}
-            {modalVisible && (
-              <Modal visible={modalVisible} style={{ backgroundColor: ACCENT }}>
-                <CreateMeeting
-                  loggedInUser={loggedInUser}
-                  departments={departments}
-                  toggleModal={toggleModal}
-                  fetchMeetings={fetchMeetings}
-                />
-              </Modal>
-            )}
-            <TextInput
-              placeholder="Search"
-              right={
-                <TextInput.Icon name="close" onPress={() => clearSearch()} />
-              }
-              left={<TextInput.Icon name="card-search" />}
-              style={{
-                borderRadius: 3,
-                borderBottomEndRadius: 3,
-                borderBottomStartRadius: 3,
-                borderTopLeftRadius: 3,
-                borderTopRightRadius: 3,
-                backgroundColor: "white",
-                borderColor: "black",
-                borderWidth: 0.5,
-                height: 40,
-              }}
-              onChangeText={(e) => {
-                if (!e.length) {
-                  clearSearch();
-                  return;
-                }
-                setSearchItem(e);
-                serachData(e);
-              }}
-              value={searchItem}
-            />
-          </View>
-          {!meetings || meetings.length < 1 ? (
-            <View style={styles.container}>
-              <EmptyList touched={() => fetchMeetings()} />
-            </View>
-          ) : (
-            <FlatList
-              data={meetings}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.Id}
-              refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              }
+      <>
+        <View
+          style={{
+            marginLeft: 15,
+            marginRight: 15,
+            marginBottom: 5,
+          }}
+        >
+          {isModalRendering && (
+            <ModalDialog
+              resetModal={resetModal}
+              onPressCancel={UpdateMeeting}
+              onPressDelete={DeleteMeeting}
+              meeting={passedMeeting}
             />
           )}
+          {modalVisible && (
+            <Modal visible={modalVisible} style={{ backgroundColor: ACCENT }}>
+              <CreateMeeting
+                loggedInUser={loggedInUser}
+                departments={departments}
+                toggleModal={toggleModal}
+                fetchMeetings={reloadData}
+              />
+            </Modal>
+          )}
+          <TextInput
+            placeholder="Search"
+            right={
+              <TextInput.Icon name="close" onPress={() => clearSearch()} />
+            }
+            left={<TextInput.Icon name="card-search" />}
+            style={{
+              borderRadius: 3,
+              borderBottomEndRadius: 3,
+              borderBottomStartRadius: 3,
+              borderTopLeftRadius: 3,
+              borderTopRightRadius: 3,
+              backgroundColor: "white",
+              borderColor: "black",
+              borderWidth: 0.5,
+              height: 40,
+            }}
+            onChangeText={(e) => {
+              if (!e.length) {
+                clearSearch();
+                return;
+              }
+              setSearchItem(e);
+              serachData(e);
+            }}
+            value={searchItem}
+          />
+        </View>
+        {!meetings || meetings.length < 1 ? (
+          <View style={styles.container}>
+            <EmptyList touched={() => {
+              console.log(meetings)
+              console.log(meetingsList)
+              reloadData()
+              }} />
+          </View>
+        ) : (
+          <FlatList
+            data={meetings}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.Id}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          />
+        )}
 
-          {renderAddIcon()}
-        </>
-      )}
+        {renderAddIcon()}
+      </>
     </SafeAreaView>
   );
 };

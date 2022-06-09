@@ -30,58 +30,66 @@ const renderAddIcon = () => {
   );
 };
 
-const PastMeetings = () => {
-  const appUser = useSelector((state) => state.user.loggedInUser);
-  const [loggedInUser, setLoggedInUser] = useState(appUser);
-  const [isLoading, setIsLoading] = useState(true);
+const PastMeetings = (props) => {
+  const { meetingsList, reloadData } = props;
+  // const appUser = useSelector((state) => state.user.loggedInUser);
+  // const [loggedInUser, setLoggedInUser] = useState(appUser);
+  // const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [meetings, setMeetings] = useState([]);
-   const [baseMeetings, setBaseMeetings] = useState([]);
+  const [meetings, setMeetings] = useState(meetingsList);
+   const [baseMeetings, setBaseMeetings] = useState(meetingsList);
    const [searchItem, setSearchItem] = useState("");
 
-  useEffect(() => {
-    fetchMeetings();
-  }, []);
+  // useEffect(() => {
+  //   fetchMeetings();
+  // }, []);
 
-  const fetchMeetings = async () => {
-    const url = `${ApiRoutes.getPastMeetings}/${loggedInUser.SiteId}`;
-    await HttpGet(loggedInUser.Token, url)
-      .then((res) => {
-        const sortedMeetings = res.data.sort((a: any, b: any) => {
-          return b.StartDate < a.StartDate
-            ? -1
-            : b.StartDate > a.StartDate
-            ? 1
-            : 0;
-        });
-        setBaseMeetings(sortedMeetings);
-        setMeetings(sortedMeetings);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        setIsLoading(false);
-      });
-  };
+  // const fetchMeetings = async () => {
+  //   const url = `${ApiRoutes.getPastMeetings}/${loggedInUser.SiteId}`;
+  //   await HttpGet(loggedInUser.Token, url)
+  //     .then((res) => {
+  //       const sortedMeetings = res.data.sort((a: any, b: any) => {
+  //         return b.StartDate < a.StartDate
+  //           ? -1
+  //           : b.StartDate > a.StartDate
+  //           ? 1
+  //           : 0;
+  //       });
+  //       setBaseMeetings(sortedMeetings);
+  //       setMeetings(sortedMeetings);
+  //       setIsLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       setIsLoading(false);
+  //     });
+  // };
+
+  // const onRefresh = async () => {
+  //   setRefreshing(true);
+  //   const url = `${ApiRoutes.getPastMeetings}/${loggedInUser.SiteId}`;
+  //   await HttpGet(loggedInUser.Token, url)
+  //     .then((res) => {
+  //       const sortedMeetings = res.data.sort((a: any, b: any) => {
+  //         return b.StartDate < a.StartDate
+  //           ? -1
+  //           : b.StartDate > a.StartDate
+  //           ? 1
+  //           : 0;
+  //       });
+  //       setBaseMeetings(sortedMeetings);
+  //       setMeetings(sortedMeetings);
+  //       setRefreshing(false);
+  //     })
+  //     .catch((err) => {
+  //       setRefreshing(false);
+  //     });
+  // };
 
   const onRefresh = async () => {
     setRefreshing(true);
-    const url = `${ApiRoutes.getPastMeetings}/${loggedInUser.SiteId}`;
-    await HttpGet(loggedInUser.Token, url)
-      .then((res) => {
-        const sortedMeetings = res.data.sort((a: any, b: any) => {
-          return b.StartDate < a.StartDate
-            ? -1
-            : b.StartDate > a.StartDate
-            ? 1
-            : 0;
-        });
-        setBaseMeetings(sortedMeetings);
-        setMeetings(sortedMeetings);
-        setRefreshing(false);
-      })
-      .catch((err) => {
-        setRefreshing(false);
-      });
+    await reloadData()
+      .then((res) => setRefreshing(false))
+      .catch((err) => setRefreshing(false));
   };
 
   const renderItem = ({ item }) => {
@@ -112,7 +120,7 @@ const PastMeetings = () => {
     setMeetings(baseMeetings);
   };
 
-  if (isLoading) return <BusyComponent />;
+  // if (isLoading) return <BusyComponent />;
 
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: "flex-start" }}>
