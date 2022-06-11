@@ -17,6 +17,7 @@ import { HttpPost } from "../../consumers/http";
 import {
   convertedDateCombinationToISO,
   convertToHourMinute,
+  isMeetingValidForAttendance,
 } from "../../consumers/DateHelper";
 import { AppButton } from "../../common/AppButton";
 import AppTextInput from "../../common/AppTextInput";
@@ -223,12 +224,18 @@ const CreateMeeting: React.FC = (props) => {
   const endTimeAndroidPickerShowMode = (mode) => {
     DateTimePickerAndroid.open({
       value: new Date(),
+      minimumDate: startDate,
       onChange: (event, selectedDate) => {
         if (event.type === "dismissed") return;
-        const resultingDate = convertedDateCombinationToISO(
+        let resultingDate = convertedDateCombinationToISO(
           meetingDate,
           new Date(event.nativeEvent.timestamp)
         );
+        const isMeetingEndDateEarlierThanStartDate =
+          isMeetingValidForAttendance(startDate, resultingDate);
+        if (isMeetingEndDateEarlierThanStartDate) {
+          resultingDate = moment(startDate).add(30, "minutes");
+        }
         setEndDate(resultingDate);
       },
       mode,
