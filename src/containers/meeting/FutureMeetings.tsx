@@ -1,21 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { SafeAreaView, 
-  View, 
-  FlatList, 
-  StyleSheet, 
-  TouchableOpacity, 
-  RefreshControl, Text
-} from 'react-native';
-import { IconButton, TextInput, Modal } from "react-native-paper";
-import { useNavigation } from "@react-navigation/native";
+import React, { useState, useEffect } from "react";
+import {
+  SafeAreaView,
+  View,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  RefreshControl,
+  Modal,
+} from "react-native";
+import { IconButton, TextInput } from "react-native-paper";
 import { useSelector } from "react-redux";
 import debounce from "lodash.debounce";
-import ItemComponent from './ItemComponent';
-import EmptyList from '../../common/EmptyList';
+import moment from "moment";
+import ItemComponent from "./ItemComponent";
+import EmptyList from "../../common/EmptyList";
 import { ApiRoutes } from "../../consumers/api-routes";
 import { HttpGet, HttpDelete, HttpPost } from "../../consumers/http";
-import BusyComponent from '../../common/BusyComponent';
-import ModalDialog from '../../common/ModalDialog';
+import BusyComponent from "../../common/BusyComponent";
+import ModalDialog from "../../common/ModalDialog";
+import CreateMeeting from "./CreateMeeting";
+import { ACCENT } from "../../styles/colors";
 
 const FutureMeetings = () => {
   const appUser = useSelector((state) => state.user.loggedInUser);
@@ -27,20 +31,26 @@ const FutureMeetings = () => {
   const [baseMeetings, setBaseMeetings] = useState([]);
   const [searchItem, setSearchItem] = useState("");
   const [passedMeeting, setPassedMeeting] = useState({});
+  const [modalVisible, setModalVisible] = useState(false);
+  const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
+    fetchDepartments();
     fetchMeetings();
   }, []);
 
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
+
   const renderAddIcon = () => {
-    const navigation = useNavigation();
     return (
       <TouchableOpacity activeOpacity={0.7} style={styles.icon}>
         <IconButton
           color="white"
           icon="plus-circle"
           size={70}
-          onPress={() => navigation.navigate("CreateMeeting")}
+          onPress={() => setModalVisible(true)}
         />
       </TouchableOpacity>
     );
@@ -50,7 +60,10 @@ const FutureMeetings = () => {
     const url = `${ApiRoutes.getFutureMeetings}/${loggedInUser.SiteId}`;
     await HttpGet(loggedInUser.Token, url)
       .then((res) => {
-        const sortedMeetings = res.data.sort((a: any, b: any) => {
+        const filteredList = res.data.filter((f) => {
+          return moment(f.StartDate).isAfter(moment());
+        });
+        const sortedMeetings = filteredList.sort((a: any, b: any) => {
           return a.StartDate < b.StartDate
             ? -1
             : a.StartDate > b.StartDate
@@ -64,6 +77,23 @@ const FutureMeetings = () => {
       .catch((err) => {
         setIsLoading(false);
       });
+  };
+
+  const fetchDepartments = async () => {
+    await HttpGet(loggedInUser.Token, ApiRoutes.getDepartments)
+      .then((res) => {
+        const result = res.data.map((item) => ({
+          key: item.id,
+          label: item.name,
+        }));
+        setDepartments(
+          result.sort((a: any, b: any) => {
+            return a.label < b.label ? -1 : a.label > b.label ? 1 : 0;
+          })
+        );
+        setIsLoading(false);
+      })
+      .catch((err) => {});
   };
 
   const UpdateMeeting = async (meeting, reoccurence) => {
@@ -116,7 +146,10 @@ const FutureMeetings = () => {
           setRefreshing(false);
           return;
         }
-        const sortedMeetings = res.data.sort((a: any, b: any) => {
+        const filteredList = res.data.filter((f) => {
+          return moment(f.StartDate).isAfter(moment());
+        });
+        const sortedMeetings = filteredList.sort((a: any, b: any) => {
           return a.StartDate < b.StartDate
             ? -1
             : a.StartDate > b.StartDate
@@ -153,23 +186,25 @@ const FutureMeetings = () => {
     );
   };
 
-  const serachData = debounce(param => {
-     const serachResult = baseMeetings.filter((item) => {
-       return (
-         item.MeetingName &&
-         item.MeetingName.length &&
-         item.MeetingName.toString().toLowerCase().includes(param.toLowerCase())
-         || item.Detail.toString().toLowerCase().includes(param.toLowerCase())
-         || item.Department.toString().toLowerCase().includes(param.toLowerCase())
-       );
-     });
-     setMeetings(serachResult);
+  const serachData = debounce((param) => {
+    const serachResult = baseMeetings.filter((item) => {
+      return (
+        (item.MeetingName &&
+          item.MeetingName.length &&
+          item.MeetingName.toString()
+            .toLowerCase()
+            .includes(param.toLowerCase())) ||
+        item.Detail.toString().toLowerCase().includes(param.toLowerCase()) ||
+        item.Department.toString().toLowerCase().includes(param.toLowerCase())
+      );
+    });
+    setMeetings(serachResult);
   }, 500);
 
   const clearSearch = () => {
     setSearchItem("");
     setMeetings(baseMeetings);
-  }
+  };
 
   // if (isLoading) return <BusyComponent />;
 
@@ -193,6 +228,16 @@ const FutureMeetings = () => {
                 onPressDelete={DeleteMeeting}
                 meeting={passedMeeting}
               />
+            )}
+            {modalVisible && (
+              <Modal visible={modalVisible} style={{ backgroundColor: ACCENT }}>
+                <CreateMeeting
+                  loggedInUser={loggedInUser}
+                  departments={departments}
+                  toggleModal={toggleModal}
+                  fetchMeetings={fetchMeetings}
+                />
+              </Modal>
             )}
             <TextInput
               placeholder="Search"

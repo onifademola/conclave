@@ -14,7 +14,7 @@ import { SMALL_DEVICE, MEDIUM_DEVICE, LARGE_DEVICE, LARGER_DEVICE } from "../../
 
 const renderAvatar = (uri: string) => (
   <Avatar.Image
-    size={SMALL_DEVICE ? 70 : LARGE_DEVICE ? 100 : LARGER_DEVICE ? 120 : 80}
+    size={SMALL_DEVICE ? 80 : LARGE_DEVICE ? 120 : LARGER_DEVICE ? 120 : 80}
     style={{ backgroundColor: SEC_COLOR }}
     source={{ uri }}
   />
@@ -22,7 +22,7 @@ const renderAvatar = (uri: string) => (
 
 const renderAvatarText = ({ Username }) => (
   <Avatar.Text
-    size={SMALL_DEVICE ? 50 : LARGE_DEVICE ? 100 : LARGER_DEVICE ? 120 : 80}
+    size={SMALL_DEVICE ? 40 : LARGE_DEVICE ? 100 : LARGER_DEVICE ? 120 : 80}
     label={ExtractInitials(Username)}
     color={PRY_COLOR}
     labelStyle={{ fontSize: 60 }}
@@ -75,6 +75,7 @@ const renderDetail = ({ DepartmentName, Username, SiteName }) => {
   return (
     <View
       style={{
+        flex: 2,
         flexDirection: "column",
         justifyContent: "flex-start",
         paddingTop: 5,
@@ -82,13 +83,11 @@ const renderDetail = ({ DepartmentName, Username, SiteName }) => {
         alignItems: "flex-end",
       }}
     >
-      {SMALL_DEVICE ? null : (
-        <Ionicons
-          name="ios-information-circle-sharp"
-          size={SMALL_DEVICE ? 18 : MEDIUM_DEVICE ? 45 : LARGE_DEVICE ? 60 : 80}
-          color={SEC_TEXT_COLOR}
-        />
-      )}
+      <Ionicons
+        name="ios-information-circle-sharp"
+        size={SMALL_DEVICE ? 40 : MEDIUM_DEVICE ? 45 : LARGE_DEVICE ? 60 : 70}
+        color={SEC_TEXT_COLOR}
+      />
       <View
         style={{
           flexDirection: "column",
@@ -98,7 +97,7 @@ const renderDetail = ({ DepartmentName, Username, SiteName }) => {
         }}
       >
         <View style={{ flexDirection: "row" }}>
-          <Text style={{ flexWrap: "wrap", ...styles.text }}>
+          <Text style={{ flexWrap: "wrap", textAlign: "right", ...styles.text }}>
             <Ionicons name="ios-mail-sharp" size={18} color={SEC_TEXT_COLOR} />
             {Username}
           </Text>
@@ -145,10 +144,12 @@ const ProfileContent = ({ user }) => {
         <></>
       ) : (
         <>
-          <View style={styles.subContainer}>
-            {imageIsValid ? renderAvatar(imageUri) : renderAvatarText(user)}
+          <View style={{ flexDirection: "row"}}>
+            <View style={styles.subContainer}>
+              {imageIsValid ? renderAvatar(imageUri) : renderAvatarText(user)}
+            </View>
+            {renderDetail(user)}
           </View>
-          {renderDetail(user)}
           {SMALL_DEVICE ? null : (
             <Headline style={styles.profileName}>{getName()}</Headline>
           )}
@@ -171,6 +172,7 @@ const styles = StyleSheet.create({
     marginTop: "15%",
   },
   subContainer: {
+    flex: 1,
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "flex-start",

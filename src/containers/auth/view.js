@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "black",
     borderBottomEndRadius: 100,
-    borderTopStartRadius: 100,
+    // borderTopStartRadius: 100,
     paddingRight: 30,
   },
 });

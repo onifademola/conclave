@@ -52,6 +52,18 @@ const ProfileView = () => {
         >
           Signout
         </Text>
+        <Text
+          style={{
+            textAlign: "right",
+            fontFamily: "RobotoCondensed_300Light",
+            color: "white",
+            fontSize: 10,
+            //marginRight: 20,
+            fontStyle: "italic"
+          }}
+        >
+          ...powered by GIconel
+        </Text>
       </TouchableOpacity>
       <ProfileHeader user={loggedInUser} />
       <ProfileContent user={loggedInUser} />

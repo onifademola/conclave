@@ -12,7 +12,11 @@ import MyAttendancesContainer from "../containers/myAttendances/index";
 import CreateMeeting from "../containers/meeting/CreateMeeting";
 import TakeAttendanceView from "../containers/attendance/viewTakeAttendance";
 import MeetingAttendance from "../containers/meeting/MeetingAttendance";
-import { SMALL_DEVICE, MEDIUM_DEVICE, LARGE_DEVICE } from "../constants/device-dimensions";
+import {
+  SMALL_DEVICE,
+  MEDIUM_DEVICE,
+  LARGE_DEVICE,
+} from "../constants/device-dimensions";
 
 const Tab = createBottomTabNavigator();
 
@@ -184,18 +188,16 @@ const AppNavigator = ({ isUserAdmin }) => {
           headerTitle: (props) => <LogoTitle {...props} />,
         }}
       />
-      {
-        isUserAdmin ? (
-          <Tab.Screen
-            name="Meetings"
-            component={MeetingsStackScreen}
-            options={{
-              // headerShown: false,
-              headerTitle: (props) => <LogoTitle {...props} />,
-            }}
-          />
-        ) : null
-      }
+      {isUserAdmin ? (
+        <Tab.Screen
+          name="Meetings"
+          component={MeetingsStackScreen}
+          options={{
+            // headerShown: false,
+            headerTitle: (props) => <LogoTitle {...props} />,
+          }}
+        />
+      ) : null}
       <Tab.Screen
         name="Recent"
         component={RecentStackScreen}
